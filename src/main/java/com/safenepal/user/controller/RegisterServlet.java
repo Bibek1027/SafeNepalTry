@@ -20,9 +20,11 @@ public class RegisterServlet extends HttpServlet {
     }
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
-        String  fullName = req.getParameter("fullname");
+        String  fullName = req.getParameter("name");
         String email = req.getParameter("email");
+        String phone = req.getParameter("phone");
         String  password = req.getParameter("password");
+        String role = req.getParameter("role");
 
         if(fullName.isEmpty() || email.isEmpty() || password.isEmpty()){
             RequestDispatcher requestDispatcher = req.getRequestDispatcher("pages/register.jsp");
@@ -36,7 +38,7 @@ public class RegisterServlet extends HttpServlet {
 
         try{
             UserDAO userDao=new UserDAO();
-            boolean userInserted = userDao.insertUser(fullName, email, hashedPassword);
+            boolean userInserted = userDao.insertUser(fullName, email, phone, hashedPassword, role);
             if(userInserted==true){
                 req.getRequestDispatcher("pages/login.jsp").forward(req,resp);
 
