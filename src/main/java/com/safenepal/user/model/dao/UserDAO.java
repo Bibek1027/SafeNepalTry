@@ -10,40 +10,44 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDAO {
-    public boolean insertUser(String name, String email, String phone, String password, String role)
-            throws SQLException{
-        String query = "INSERT INTO user (name, email, phone, password, role) VALUES (?, ?, ?,?,?)";
-        try(Connection con = DBConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement(query);
-        ){
+
+    public boolean insertUser(String name, String email, String phone,
+                              String password, String role)
+            throws SQLException {
+        String query = "INSERT INTO users (name, email, phone, password, role) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
             ps.setString(1, name);
             ps.setString(2, email);
-            ps.setString(3, password);
+            ps.setString(3, phone);
+            ps.setString(4, password); // ← fixed index
+            ps.setString(5, role);     // ← fixed index
 
             int rowsInserted = ps.executeUpdate();
-            if(rowsInserted > 0){
-                return true;
-            }else{
-                return false;
-            }
+            return rowsInserted > 0;
         }
     }
 
-    public User loginUser(String email, String phone, String password, String role)
-            throws SQLException{
-        String query = "SELECT * FROM user WHERE email = ?";
-        try(Connection con = DBConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement(query)){
+    public User loginUser(String email, String password)
+            throws SQLException {
+        String query = "SELECT * FROM users WHERE email = ?"; // ← fixed table name
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
-                String storeHashedPassword = rs.getString("password");
-                if(BCrypt.checkpw(password, storeHashedPassword)){
+
+            if (rs.next()) {
+                String storedHashedPassword = rs.getString("password");
+                if (BCrypt.checkpw(password, storedHashedPassword)) {
                     int id = rs.getInt("id");
                     String name = rs.getString("name");
+                    String phone = rs.getString("phone");
+                    String role = rs.getString("role");
 
-                    User userObj = new User(id,name,email,phone,storeHashedPassword,role);
-                    return userObj;
+                    return new User(id,name,email,phone,password,role);
                 }
             }
         }
