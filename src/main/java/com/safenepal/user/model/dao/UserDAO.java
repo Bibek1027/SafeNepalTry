@@ -10,9 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDAO {
-    public boolean insertUser(String name, String email, String password)
+    public boolean insertUser(String name, String email, String phone, String password, String role)
             throws SQLException{
-        String query = "INSERT INTO user (name, email, password) VALUES (?, ?, ?)";
+        String query = "INSERT INTO user (name, email, phone, password, role) VALUES (?, ?, ?,?,?)";
         try(Connection con = DBConnection.getConnection();
             PreparedStatement ps = con.prepareStatement(query);
         ){
@@ -29,7 +29,7 @@ public class UserDAO {
         }
     }
 
-    public User loginUser(String email, String password)
+    public User loginUser(String email, String phone, String password, String role)
             throws SQLException{
         String query = "SELECT * FROM user WHERE email = ?";
         try(Connection con = DBConnection.getConnection();
@@ -42,7 +42,7 @@ public class UserDAO {
                     int id = rs.getInt("id");
                     String name = rs.getString("name");
 
-                    User userObj = new User(id,name,email,storeHashedPassword);
+                    User userObj = new User(id,name,email,phone,storeHashedPassword,role);
                     return userObj;
                 }
             }
