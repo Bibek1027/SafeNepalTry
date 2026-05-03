@@ -1,56 +1,72 @@
 package com.safenepal.user.controller;
 
+import com.safenepal.user.model.User;
 import com.safenepal.user.model.dao.UserDAO;
-import jakarta.servlet.RequestDispatcher;
+import com.safenepal.utils.ValidationUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.io.IOException;
 
-@WebServlet(name = "registerPage", value = "/register")
+@WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("pages/register.jsp");
-        requestDispatcher.forward(req,resp);
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        req.getRequestDispatcher("/pages/register.jsp").forward(req, resp);
     }
+
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
-        String  fullName = req.getParameter("name");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String fullName = req.getParameter("fullName");
         String email = req.getParameter("email");
         String phone = req.getParameter("phone");
-        String  password = req.getParameter("password");
-        String role = req.getParameter("role");
+        String password = req.getParameter("password");
+        String confirmPassword = req.getParameter("confirmPassword");
 
-        if(fullName.isEmpty() || email.isEmpty() || password.isEmpty()){
-            RequestDispatcher requestDispatcher = req.getRequestDispatcher("pages/register.jsp");
+        req.setAttribute("fullName", fullName);
+        req.setAttribute("email", email);
+        req.setAttribute("phone", phone);
 
-            String message = "Please fill the all fields";
-            req.setAttribute("error",message);
-
-            requestDispatcher.forward(req,resp);
+        if (!ValidationUtil.isValidFullName(fullName)) {
+            req.setAttribute("error", "Invalid full name.");
+            req.getRequestDispatcher("/pages/register.jsp").forward(req, resp);
+            return;
         }
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        if (!ValidationUtil.isValidEmail(email)) {
+            req.setAttribute("error", "Invalid email address.");
+            req.getRequestDispatcher("/pages/register.jsp").forward(req, resp);
+            return;
+        }
+        if (!password.equals(confirmPassword)) {
+            req.setAttribute("error", "Passwords do not match.");
+            req.getRequestDispatcher("/pages/register.jsp").forward(req, resp);
+            return;
+        }
 
-        try{
-            UserDAO userDao=new UserDAO();
-            boolean userInserted = userDao.insertUser(fullName, email, phone, hashedPassword, role);
-            if(userInserted==true){
-                req.getRequestDispatcher("pages/login.jsp").forward(req,resp);
-
-            }else{
-                req.setAttribute("error", "Something went wrong ! Please try again ");
-                req.getRequestDispatcher("pages/register.jsp").forward(req,resp);
+        try {
+            UserDAO userDAO = new UserDAO();
+            if (userDAO.getUserByEmail(email) != null) {
+                req.setAttribute("error", "Email already exists.");
+                req.getRequestDispatcher("/pages/register.jsp").forward(req, resp);
+                return;
             }
-        }
-        catch (Exception e){
-            req.setAttribute("error", e.getMessage());
-            req.getRequestDispatcher("pages/register.jsp").forward(req, resp);
-
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+            User newUser = new User(fullName, email, phone, hashedPassword, "user");
+            if (userDAO.insertUser(newUser)) {
+                resp.sendRedirect("login?success=Registration successful!");
+            } else {
+                req.setAttribute("error", "Database error.");
+                req.getRequestDispatcher("/pages/register.jsp").forward(req, resp);
+            }
+        } catch (Exception e) {
+            req.setAttribute("error", "Error: " + e.getMessage());
+            req.getRequestDispatcher("/pages/register.jsp").forward(req, resp);
         }
     }
 }
