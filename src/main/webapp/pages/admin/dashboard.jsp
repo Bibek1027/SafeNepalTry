@@ -210,24 +210,24 @@
 </head>
 <body>
 <aside class="sidebar">
-    <div class="brand"><span>🛡️</span> <span>SAFENEPAL</span></div>
+    <div class="brand">SAFENEPAL</div>
     <nav>
         <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link active">
-            <span class="icon">📊</span> <span>Dashboard</span>
+            <span class="icon">D</span> <span>Dashboard</span>
         </a>
         <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link">
-            <span class="icon">📋</span> <span>Reports</span>
+            <span class="icon">R</span> <span>Reports</span>
         </a>
         <a href="${pageContext.request.contextPath}/admin/users" class="nav-link">
-            <span class="icon">👥</span> <span>Users</span>
+            <span class="icon">U</span> <span>Users</span>
         </a>
         <a href="${pageContext.request.contextPath}/admin/alerts" class="nav-link">
-            <span class="icon">🔔</span> <span>Alerts</span>
+            <span class="icon">A</span> <span>Alerts</span>
         </a>
     </nav>
     <div class="logout">
         <a href="${pageContext.request.contextPath}/logout" class="nav-link">
-            <span class="icon">🚪</span> <span>Logout</span>
+            <span class="icon">L</span> <span>Logout</span>
         </a>
     </div>
 </aside>
@@ -243,22 +243,22 @@
 
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="icon-box bg-orange">⏳</div>
+            <div class="icon-box bg-orange">P</div>
             <div class="value"><%= pendingReports %></div>
             <div class="label">Pending Reports</div>
         </div>
         <div class="stat-card">
-            <div class="icon-box bg-green">✅</div>
+            <div class="icon-box bg-green">V</div>
             <div class="value"><%= approvedReports %></div>
             <div class="label">Approved Reports</div>
         </div>
         <div class="stat-card">
-            <div class="icon-box bg-blue">🔔</div>
+            <div class="icon-box bg-blue">A</div>
             <div class="value"><%= totalAlerts %></div>
             <div class="label">Active Alerts</div>
         </div>
         <div class="stat-card">
-            <div class="icon-box bg-purple">👥</div>
+            <div class="icon-box bg-purple">U</div>
             <div class="value"><%= totalUsers %></div>
             <div class="label">Registered Users</div>
         </div>
@@ -266,7 +266,7 @@
 
     <div class="section-card">
         <div class="section-header">
-            <h2>📄 Recent Disaster Reports</h2>
+            <h2>Recent Disaster Reports</h2>
             <a href="${pageContext.request.contextPath}/admin/reports" class="view-all">View All →</a>
         </div>
         <% if (recentReports == null || recentReports.isEmpty()) { %>
@@ -281,9 +281,9 @@
             <tr>
                 <td><strong><%= r.getReporterName() != null ? r.getReporterName() : "N/A" %></strong></td>
                 <td><%= r.getDisasterType() %></td>
-                <td style="color:#64748b"><%= r.getLocation() %></td>
+                <td style="color:#64748b"><%= r.getLocationName() %></td>
                 <td><span class="status status-<%= r.getStatus() %>"><%= r.getStatus() %></span></td>
-                <td style="color:#94a3b8; font-size:13px"><%= r.getCreatedAt() != null ? r.getCreatedAt().toString().substring(0, 10) : "Recently" %></td>
+                <td style="color:#94a3b8; font-size:13px"><%= r.getReportedAt() != null ? r.getReportedAt().toString().substring(0, 10) : "Recently" %></td>
             </tr>
             <% } %>
             </tbody>

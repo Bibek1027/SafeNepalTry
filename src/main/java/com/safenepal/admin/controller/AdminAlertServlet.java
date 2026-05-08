@@ -2,6 +2,8 @@ package com.safenepal.admin.controller;
 
 import com.safenepal.alert.model.Alert;
 import com.safenepal.alert.model.dao.AlertDAO;
+import com.safenepal.location.model.dao.LocationDAO;
+import com.safenepal.notification.service.NotificationService;
 import com.safenepal.utils.ValidationUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,6 +33,7 @@ public class AdminAlertServlet extends HttpServlet {
                 return;
             }
 
+            req.setAttribute("locations", new LocationDAO().getAllLocations());
             req.setAttribute("alerts", alertDAO.getAllAlerts());
             req.getRequestDispatcher("/pages/admin/manageAlerts.jsp").forward(req, resp);
 
@@ -49,7 +52,8 @@ public class AdminAlertServlet extends HttpServlet {
 
         String message  = req.getParameter("message");
         String severity = req.getParameter("severity");
-        String location = req.getParameter("location");
+        String locStr   = req.getParameter("locationId");
+        String type     = req.getParameter("alertType");
 
         if (ValidationUtil.isEmpty(message)) {
             req.setAttribute("error", "Alert message is required.");
@@ -64,8 +68,18 @@ public class AdminAlertServlet extends HttpServlet {
 
         try {
             AlertDAO alertDAO = new AlertDAO();
-            Alert alert = new Alert(adminId, message, severity, location);
+            Alert alert = new Alert();
+            alert.setAdminId(adminId);
+            alert.setMessage(message);
+            alert.setSeverity(severity);
+            alert.setAlertType(type != null ? type : "Emergency");
+            alert.setLocationId(Integer.parseInt(locStr));
+            
             alertDAO.insertAlert(alert);
+
+            // Notify ALL active users about the new emergency alert
+            NotificationService.notifyNewAlert(message, severity);
+
             resp.sendRedirect(req.getContextPath() + "/admin/alerts?msg=Alert published successfully!");
 
         } catch (Exception e) {
@@ -77,6 +91,7 @@ public class AdminAlertServlet extends HttpServlet {
     private void loadAndForward(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
+            req.setAttribute("locations", new LocationDAO().getAllLocations());
             req.setAttribute("alerts", new AlertDAO().getAllAlerts());
         } catch (Exception ignored) {}
         req.getRequestDispatcher("/pages/admin/manageAlerts.jsp").forward(req, resp);

@@ -197,7 +197,7 @@
 <body>
 
 <div class="main-wrapper">
-    <jsp:include page="../../components/header.jsp" />
+    <jsp:include page="../../components/app-header.jsp" />
 
     <div class="page-wrapper">
 
@@ -210,20 +210,20 @@
             </div>
         </div>
 
-        <div class="meta-chip">📅 Member since <%= createdAt %></div>
+        <div class="meta-chip">Member since <%= createdAt %></div>
 
         <!-- ═══ Card 1: Personal Info ═══ -->
         <div class="card">
             <div class="card-header">
-                <div class="card-icon blue">👤</div>
+                <div class="card-icon blue">P</div>
                 <h2>Personal Information</h2>
             </div>
 
             <% if (request.getAttribute("profileSuccess") != null) { %>
-            <div class="alert alert-success">✅ <%= request.getAttribute("profileSuccess") %></div>
+            <div class="alert alert-success">Success: <%= request.getAttribute("profileSuccess") %></div>
             <% } %>
             <% if (request.getAttribute("profileError") != null) { %>
-            <div class="alert alert-error">⚠️ <%= request.getAttribute("profileError") %></div>
+            <div class="alert alert-error">Error: <%= request.getAttribute("profileError") %></div>
             <% } %>
 
             <form action="${pageContext.request.contextPath}/user/profile" method="post" id="profileForm">
@@ -242,22 +242,22 @@
                         <input type="text" id="phone" name="phone" value="<%= phone %>" required>
                     </div>
                 </div>
-                <button type="submit" class="btn-primary">💾 Save Changes</button>
+                <button type="submit" class="btn-primary">Save Changes</button>
             </form>
         </div>
 
         <!-- ═══ Card 2: Change Password ═══ -->
         <div class="card">
             <div class="card-header">
-                <div class="card-icon red">🔒</div>
+                <div class="card-icon red">L</div>
                 <h2>Change Password</h2>
             </div>
 
             <% if (request.getAttribute("passwordSuccess") != null) { %>
-            <div class="alert alert-success">✅ <%= request.getAttribute("passwordSuccess") %></div>
+            <div class="alert alert-success">Success: <%= request.getAttribute("passwordSuccess") %></div>
             <% } %>
             <% if (request.getAttribute("passwordError") != null) { %>
-            <div class="alert alert-error">⚠️ <%= request.getAttribute("passwordError") %></div>
+            <div class="alert alert-error">Error: <%= request.getAttribute("passwordError") %></div>
             <% } %>
 
             <form action="${pageContext.request.contextPath}/user/profile" method="post" id="passwordForm">
@@ -276,7 +276,7 @@
                         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter new password" required>
                     </div>
                 </div>
-                <button type="submit" class="btn-primary btn-danger">🔑 Update Password</button>
+                <button type="submit" class="btn-primary btn-danger">Update Password</button>
             </form>
         </div>
 

@@ -90,7 +90,7 @@ public class UserDAO {
 
     // Get a single user by their primary key — used by profile page
     public User getUserById(int id) throws SQLException {
-        String query = "SELECT * FROM users WHERE id = ?";
+        String query = "SELECT * FROM users WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement st = conn.prepareStatement(query)) {
 
@@ -103,7 +103,7 @@ public class UserDAO {
 
     // Update name and phone for a user — used by profile update
     public boolean updateProfile(int id, String fullName, String phone) throws SQLException {
-        String query = "UPDATE users SET full_name = ?, phone = ? WHERE id = ?";
+        String query = "UPDATE users SET full_name = ?, phone = ? WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement st = conn.prepareStatement(query)) {
 
@@ -116,7 +116,7 @@ public class UserDAO {
 
     // Update hashed password for a user — used by change password form
     public boolean updatePassword(int id, String hashedPassword) throws SQLException {
-        String query = "UPDATE users SET password = ? WHERE id = ?";
+        String query = "UPDATE users SET password = ? WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement st = conn.prepareStatement(query)) {
 
@@ -126,9 +126,21 @@ public class UserDAO {
         }
     }
 
+    // Update user status (active/suspended) — used by admin panel
+    public boolean updateStatus(int userId, String status) throws SQLException {
+        String query = "UPDATE users SET status = ? WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(query)) {
+
+            st.setString(1, status);
+            st.setInt(2, userId);
+            return st.executeUpdate() > 0;
+        }
+    }
+
     // Delete a user by ID — used by admin panel
     public boolean deleteUser(int userId) throws SQLException {
-        String query = "DELETE FROM users WHERE id = ?";
+        String query = "DELETE FROM users WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement st = conn.prepareStatement(query)) {
 
@@ -137,15 +149,32 @@ public class UserDAO {
         }
     }
 
+    // Get all active regular user IDs — used by NotificationService to broadcast alert notifications
+    public List<Integer> getAllActiveUserIds() throws SQLException {
+        String query = "SELECT user_id FROM users WHERE role = 'user' AND status = 'active'";
+        List<Integer> ids = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(query);
+             ResultSet rs = st.executeQuery()) {
+
+            while (rs.next()) {
+                ids.add(rs.getInt("user_id"));
+            }
+        }
+        return ids;
+    }
+
     // Helper method: map a ResultSet row to a User object
     private User mapRow(ResultSet rs) throws SQLException {
         User user = new User();
-        user.setId(rs.getInt("id"));
+        user.setId(rs.getInt("user_id"));
         user.setFullName(rs.getString("full_name"));
         user.setEmail(rs.getString("email"));
         user.setPhone(rs.getString("phone"));
         user.setPassword(rs.getString("password"));
         user.setRole(rs.getString("role"));
+        user.setStatus(rs.getString("status"));
         user.setCreatedAt(rs.getTimestamp("created_at"));
         return user;
     }

@@ -279,19 +279,19 @@
 <body>
 <div class="modal-overlay" id="registerModal">
     <div class="modal">
-        <div style="font-size: 52px; margin-bottom: 16px;">👋</div>
+        <div style="font-size: 52px; margin-bottom: 16px;">W</div>
         <h3>Join SafeNepal</h3>
         <p>You need an account to submit disaster reports. Redirecting you to registration...</p>
         <a href="register" class="hero-btn hero-btn-primary" style="display:inline-block;">Register Now</a>
     </div>
 </div>
 <div class="main-wrapper">
-    <jsp:include page="/components/header.jsp" />
+    <jsp:include page="/components/app-header.jsp" />
 
     <!-- ═══ Hero ═══ -->
     <section class="hero">
         <div class="hero-content">
-            <div class="hero-badge">🚨 Real-time disaster alerts for Nepal</div>
+            <div class="hero-badge">Real-time disaster alerts for Nepal</div>
             <h1>
                 <% if (isLoggedIn) { %>
                     Welcome Back, <span class="accent"><%= userName %></span>
@@ -315,19 +315,19 @@
     <!-- ═══ Stats ═══ -->
     <div class="stats-strip">
         <div class="stat-card">
-            <div class="stat-icon">🚨</div>
+            <div class="stat-icon">A</div>
             <div class="stat-num"><%= alerts != null ? alerts.size() : 0 %></div>
             <div class="stat-label">Active Alerts</div>
         </div>
         <% if (isLoggedIn) { %>
         <div class="stat-card">
-            <div class="stat-icon">📋</div>
+            <div class="stat-icon">R</div>
             <div class="stat-num"><%= totalReports %></div>
             <div class="stat-label">My Submissions</div>
         </div>
         <% } %>
         <div class="stat-card">
-            <div class="stat-icon">🛡️</div>
+            <div class="stat-icon">S</div>
             <div class="stat-num">24/7</div>
             <div class="stat-label">Monitoring Active</div>
         </div>
@@ -337,17 +337,17 @@
         <!-- ═══ Emergency Alerts ═══ -->
         <div class="section-card">
             <div class="section-title">
-                🚨 Emergency Alerts
+                Emergency Alerts
                 <% if (alerts != null && !alerts.isEmpty()) { %><span class="badge"><%= alerts.size() %> active</span><% } %>
             </div>
             <% if (alerts == null || alerts.isEmpty()) { %>
-                <div class="no-data"><span>✅</span>No active emergency alerts at this time.<br>The community is safe.</div>
+                <div class="no-data"><span>V</span>No active emergency alerts at this time.<br>The community is safe.</div>
             <% } else { for (Alert a : alerts) { %>
                 <div class="alert-item">
                     <span class="alert-severity sev-<%= a.getSeverity() %>"><%= a.getSeverity().toUpperCase() %></span>
                     <div class="alert-body">
                         <div class="alert-msg"><%= a.getMessage() %></div>
-                        <div class="alert-loc">📍 <%= a.getLocation() %></div>
+                        <div class="alert-loc">Location: <%= a.getLocationName() %></div>
                     </div>
                 </div>
             <% } } %>
@@ -356,14 +356,14 @@
         <!-- ═══ My Reports (logged-in only) ═══ -->
         <% if (isLoggedIn) { %>
         <div class="section-card">
-            <div class="section-title">📄 My Recent Reports</div>
+            <div class="section-title">My Recent Reports</div>
             <% if (myReports == null || myReports.isEmpty()) { %>
-                <div class="no-data"><span>📝</span>You haven't submitted any reports yet.<br>Use the button above to report an emergency.</div>
+                <div class="no-data"><span>M</span>You haven't submitted any reports yet.<br>Use the button above to report an emergency.</div>
             <% } else { for (Report r : myReports) { %>
                 <div class="report-row">
                     <div>
                         <span class="report-type"><%= r.getDisasterType() %></span>
-                        <span class="report-loc">📍 <%= r.getLocation() %></span>
+                        <span class="report-loc">Location: <%= r.getLocationName() %></span>
                     </div>
                     <span class="report-status st-<%= r.getStatus().toUpperCase() %>"><%= r.getStatus() %></span>
                 </div>

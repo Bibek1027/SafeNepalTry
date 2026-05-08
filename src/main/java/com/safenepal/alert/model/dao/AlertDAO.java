@@ -12,14 +12,16 @@ public class AlertDAO {
 
     // Insert a new alert (created by admin)
     public boolean insertAlert(Alert alert) throws SQLException {
-        String query = "INSERT INTO alerts (admin_id, message, severity, location) VALUES (?,?,?,?)";
+        String query = "INSERT INTO alerts (admin_id, location_id, message, severity, alert_type, expiry_time) VALUES (?,?,?,?,?,?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement st = conn.prepareStatement(query)) {
 
             st.setInt(1, alert.getAdminId());
-            st.setString(2, alert.getMessage());
-            st.setString(3, alert.getSeverity());
-            st.setString(4, alert.getLocation());
+            st.setInt(2, alert.getLocationId());
+            st.setString(3, alert.getMessage());
+            st.setString(4, alert.getSeverity());
+            st.setString(5, alert.getAlertType());
+            st.setTimestamp(6, alert.getExpiryTime());
 
             return st.executeUpdate() > 0;
         }
@@ -27,8 +29,10 @@ public class AlertDAO {
 
     // Fetch all alerts — joined with admin name
     public List<Alert> getAllAlerts() throws SQLException {
-        String query = "SELECT a.*, u.full_name AS admin_name " +
-                "FROM alerts a JOIN users u ON a.admin_id = u.id " +
+        String query = "SELECT a.*, u.full_name AS admin_name, l.location_name " +
+                "FROM alerts a " +
+                "JOIN users u ON a.admin_id = u.user_id " +
+                "JOIN locations l ON a.location_id = l.location_id " +
                 "ORDER BY a.created_at DESC";
         List<Alert> list = new ArrayList<>();
 
@@ -45,7 +49,7 @@ public class AlertDAO {
 
     // Delete an alert by ID
     public boolean deleteAlert(int alertId) throws SQLException {
-        String query = "DELETE FROM alerts WHERE id = ?";
+        String query = "DELETE FROM alerts WHERE alert_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement st = conn.prepareStatement(query)) {
 
@@ -69,13 +73,16 @@ public class AlertDAO {
     // Helper method: map a ResultSet row to an Alert object
     private Alert mapRow(ResultSet rs) throws SQLException {
         Alert a = new Alert();
-        a.setId(rs.getInt("id"));
+        a.setAlertId(rs.getInt("alert_id"));
         a.setAdminId(rs.getInt("admin_id"));
+        a.setLocationId(rs.getInt("location_id"));
         a.setMessage(rs.getString("message"));
         a.setSeverity(rs.getString("severity"));
-        a.setLocation(rs.getString("location"));
+        a.setAlertType(rs.getString("alert_type"));
         a.setCreatedAt(rs.getTimestamp("created_at"));
-        a.setAdminName(rs.getString("admin_name"));
+        a.setExpiryTime(rs.getTimestamp("expiry_time"));
+        try { a.setLocationName(rs.getString("location_name")); } catch (Exception ignored) {}
+        try { a.setAdminName(rs.getString("admin_name")); } catch (Exception ignored) {}
         return a;
     }
 }

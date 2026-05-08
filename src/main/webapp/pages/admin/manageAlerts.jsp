@@ -1,12 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.safenepal.alert.model.Alert" %>
+<%@ page import="com.safenepal.location.model.Location" %>
 <%
     if (session == null || session.getAttribute("userId") == null || !"admin".equals(session.getAttribute("role"))) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
     List<Alert> alerts = (List<Alert>) request.getAttribute("alerts");
+    List<Location> locationsList = (List<Location>) request.getAttribute("locations");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -155,37 +157,42 @@
 </head>
 <body>
 <aside class="sidebar">
-    <div class="brand"><span>🛡️</span> <span>SAFENEPAL</span></div>
+    <div class="brand">SAFENEPAL</div>
     <nav>
-        <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link"><span class="icon">📊</span> <span>Dashboard</span></a>
-        <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link"><span class="icon">📋</span> <span>Reports</span></a>
-        <a href="${pageContext.request.contextPath}/admin/users" class="nav-link"><span class="icon">👥</span> <span>Users</span></a>
-        <a href="${pageContext.request.contextPath}/admin/alerts" class="nav-link active"><span class="icon">🔔</span> <span>Alerts</span></a>
+        <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link"><span class="icon">D</span> <span>Dashboard</span></a>
+        <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link"><span class="icon">R</span> <span>Reports</span></a>
+        <a href="${pageContext.request.contextPath}/admin/users" class="nav-link"><span class="icon">U</span> <span>Users</span></a>
+        <a href="${pageContext.request.contextPath}/admin/alerts" class="nav-link active"><span class="icon">A</span> <span>Alerts</span></a>
     </nav>
-    <div class="logout"><a href="${pageContext.request.contextPath}/logout" class="nav-link"><span class="icon">🚪</span> <span>Logout</span></a></div>
+    <div class="logout"><a href="${pageContext.request.contextPath}/logout" class="nav-link"><span class="icon">L</span> <span>Logout</span></a></div>
 </aside>
 
 <main class="main-content">
-    <h1 class="page-title">🔔 Public Disaster Alerts</h1>
+    <h1 class="page-title">Public Disaster Alerts</h1>
 
-    <% if (request.getParameter("msg") != null) { %><div class="alert-msg">✅ <%= request.getParameter("msg") %></div><% } %>
+    <% if (request.getParameter("msg") != null) { %><div class="alert-msg">Success: <%= request.getParameter("msg") %></div><% } %>
 
     <!-- Issue New Alert -->
     <div class="section-card">
-        <div class="card-title">📢 Issue New Alert</div>
+        <div class="card-title">Issue New Alert</div>
         <form action="${pageContext.request.contextPath}/admin/alerts" method="POST">
             <div class="form-grid">
                 <div class="form-group">
                     <label>Location</label>
-                    <input type="text" name="location" placeholder="e.g. Kathmandu, Koteshwor" required>
+                    <select name="locationId" required>
+                        <option value="">-- Select Location --</option>
+                        <% if (locationsList != null) { for (Location l : locationsList) { %>
+                            <option value="<%= l.getLocationId() %>"><%= l.getLocationName() %> (<%= l.getDistrict() %>)</option>
+                        <% } } %>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Severity Level</label>
                     <select name="severity">
-                        <option value="Low">🟢 Low</option>
-                        <option value="Medium">🟡 Medium</option>
-                        <option value="High">🟠 High</option>
-                        <option value="Critical">🔴 Critical</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
                     </select>
                 </div>
             </div>
@@ -193,13 +200,13 @@
                 <label>Alert Message</label>
                 <textarea name="message" placeholder="Detailed instructions for the public..." required></textarea>
             </div>
-            <button type="submit" class="btn-broadcast">📡 Broadcast Alert Now</button>
+            <button type="submit" class="btn-broadcast">Broadcast Alert Now</button>
         </form>
     </div>
 
     <!-- Active Broadcasts -->
     <div class="section-card">
-        <div class="card-title">📋 Active Broadcasts</div>
+        <div class="card-title">Active Broadcasts</div>
         <table>
             <thead>
             <tr><th>Location</th><th>Message</th><th>Severity</th><th>Action</th></tr>
@@ -207,10 +214,10 @@
             <tbody>
             <% if (alerts != null) { for (Alert a : alerts) { %>
             <tr>
-                <td><strong><%= a.getLocation() %></strong></td>
+                <td><strong><%= a.getLocationName() %></strong></td>
                 <td><div class="msg-text"><%= a.getMessage() %></div></td>
                 <td><span class="severity severity-<%= a.getSeverity() %>"><%= a.getSeverity().toUpperCase() %></span></td>
-                <td><a href="${pageContext.request.contextPath}/admin/alerts?action=delete&id=<%= a.getId() %>" class="btn-stop" onclick="return confirm('Stop this alert broadcast?')">Stop</a></td>
+                <td><a href="${pageContext.request.contextPath}/admin/alerts?action=delete&id=<%= a.getAlertId() %>" class="btn-stop" onclick="return confirm('Stop this alert broadcast?')">Stop</a></td>
             </tr>
             <% } } %>
             </tbody>

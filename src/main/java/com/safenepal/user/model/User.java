@@ -11,6 +11,7 @@ public class User {
     private String phone;
     private String password;
     private String role;         // "admin" or "user"
+    private String status;       // "active" or "suspended"
     private Timestamp createdAt;
 
     // Default constructor
@@ -73,6 +74,13 @@ public class User {
         this.role = role;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Timestamp getCreatedAt() {
         return createdAt;

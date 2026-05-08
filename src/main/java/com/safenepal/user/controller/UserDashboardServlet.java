@@ -8,9 +8,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 // Shows the dashboard — accessible to guests AND logged-in users
+@WebServlet("/user/dashboard")
 public class UserDashboardServlet extends HttpServlet {
 
     @Override

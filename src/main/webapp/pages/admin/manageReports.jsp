@@ -1,12 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.safenepal.report.model.Report" %>
+<%@ page import="com.safenepal.reportImage.model.ReportImage" %>
+<%@ page import="com.safenepal.reportImage.model.dao.ReportImageDAO" %>
 <%
   if (session == null || session.getAttribute("userId") == null || !"admin".equals(session.getAttribute("role"))) {
     response.sendRedirect(request.getContextPath() + "/login");
     return;
   }
   List<Report> reports = (List<Report>) request.getAttribute("reports");
+  ReportImageDAO imgDAO = new ReportImageDAO();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +43,7 @@
     tr:hover td { background: #fafbff; }
     tr:last-child td { border-bottom: none; }
 
-    .desc-text { max-width: 260px; color: #64748b; line-height: 1.5; font-size: 13px; }
+    .desc-text { max-width: 220px; color: #64748b; line-height: 1.5; font-size: 13px; }
     .reporter-name { font-weight: 700; }
     .reporter-loc { font-size: 12px; color: #94a3b8; margin-top: 2px; }
 
@@ -59,9 +62,28 @@
     .btn-delete:hover  { background: #dc2626; }
     .btn-action:hover { transform: translateY(-1px); }
 
-    .empty-state { text-align: center; padding: 48px; color: #94a3b8; font-size: 14px; }
+    /* Image Thumbnails */
+    .img-strip { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+    .img-thumb {
+        width: 52px; height: 52px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 2px solid #e2e8f0;
+        cursor: pointer;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .img-thumb:hover { transform: scale(1.08); border-color: #1a237e; }
+    .img-count { font-size: 11px; color: #94a3b8; margin-top: 4px; }
 
+    /* Lightbox */
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+    .lightbox-close { position: absolute; top: 20px; right: 28px; font-size: 32px; color: #fff; cursor: pointer; font-weight: 900; line-height: 1; }
+
+    .empty-state { text-align: center; padding: 48px; color: #94a3b8; font-size: 14px; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
     @media (max-width: 1000px) {
       .sidebar { width: 80px; }
       .sidebar .brand span:last-child, .sidebar .nav-link span:last-child { display: none; }
@@ -71,41 +93,72 @@
 </head>
 <body>
 <aside class="sidebar">
-  <div class="brand"><span>🛡️</span> <span>SAFENEPAL</span></div>
+  <div class="brand">SAFENEPAL</div>
   <nav>
-    <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link"><span class="icon">📊</span> <span>Dashboard</span></a>
-    <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link active"><span class="icon">📋</span> <span>Reports</span></a>
-    <a href="${pageContext.request.contextPath}/admin/users" class="nav-link"><span class="icon">👥</span> <span>Users</span></a>
-    <a href="${pageContext.request.contextPath}/admin/alerts" class="nav-link"><span class="icon">🔔</span> <span>Alerts</span></a>
+    <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link"><span class="icon">D</span> <span>Dashboard</span></a>
+    <a href="${pageContext.request.contextPath}/admin/reports"   class="nav-link active"><span class="icon">R</span> <span>Reports</span></a>
+    <a href="${pageContext.request.contextPath}/admin/users"     class="nav-link"><span class="icon">U</span> <span>Users</span></a>
+    <a href="${pageContext.request.contextPath}/admin/alerts"    class="nav-link"><span class="icon">A</span> <span>Alerts</span></a>
   </nav>
-  <div class="logout"><a href="${pageContext.request.contextPath}/logout" class="nav-link"><span class="icon">🚪</span> <span>Logout</span></a></div>
+  <div class="logout"><a href="${pageContext.request.contextPath}/logout" class="nav-link"><span class="icon">L</span> <span>Logout</span></a></div>
 </aside>
 
 <main class="main-content">
-  <h1 class="page-title">📋 Manage Reports</h1>
+  <h1 class="page-title">Manage Reports</h1>
   <div class="section-card">
-    <% if (request.getParameter("msg") != null) { %><div class="alert-msg">✅ <%= request.getParameter("msg") %></div><% } %>
+    <% if (request.getParameter("msg") != null) { %><div class="alert-msg">Success: <%= request.getParameter("msg") %></div><% } %>
     <% if (reports == null || reports.isEmpty()) { %>
       <div class="empty-state">No reports currently pending review.</div>
     <% } else { %>
     <table>
       <thead>
-      <tr><th>Reporter</th><th>Type</th><th>Description</th><th>Status</th><th>Actions</th></tr>
+      <tr>
+        <th>Reporter</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Photos</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
       </thead>
       <tbody>
-      <% for (Report r : reports) { %>
+      <% for (Report r : reports) {
+           List<ReportImage> imgs = null;
+           try { imgs = imgDAO.getImagesByReportId(r.getId()); } catch (Exception ignored) {}
+      %>
       <tr>
         <td>
           <div class="reporter-name"><%= r.getReporterName() %></div>
-          <div class="reporter-loc">📍 <%= r.getLocation() %></div>
+          <div class="reporter-loc">Location: <%= r.getLocationName() %></div>
         </td>
         <td><%= r.getDisasterType() %></td>
         <td><div class="desc-text"><%= r.getDescription() %></div></td>
+        <td>
+          <% if (imgs != null && !imgs.isEmpty()) { %>
+            <div class="img-strip">
+              <% for (ReportImage img : imgs) { %>
+                <img src="${pageContext.request.contextPath}/<%= img.getImagePath() %>"
+                     class="img-thumb"
+                     alt="Report image"
+                     onclick="openLightbox(this.src)">
+              <% } %>
+            </div>
+            <div class="img-count"><%= imgs.size() %> photo<%= imgs.size() == 1 ? "" : "s" %></div>
+          <% } else { %>
+            <span style="color:#cbd5e1; font-size:12px;">None</span>
+          <% } %>
+        </td>
         <td><span class="status status-<%= r.getStatus() %>"><%= r.getStatus() %></span></td>
         <td class="actions">
-          <% if (!"Approved".equals(r.getStatus())) { %><a href="${pageContext.request.contextPath}/admin/reports?action=approve&id=<%= r.getId() %>" class="btn-action btn-approve">Approve</a><% } %>
-          <% if (!"Rejected".equals(r.getStatus())) { %><a href="${pageContext.request.contextPath}/admin/reports?action=reject&id=<%= r.getId() %>" class="btn-action btn-reject">Reject</a><% } %>
-          <a href="${pageContext.request.contextPath}/admin/reports?action=delete&id=<%= r.getId() %>" class="btn-action btn-delete" onclick="return confirm('Delete this report permanently?')">Delete</a>
+          <% if (!"Approved".equals(r.getStatus())) { %>
+            <a href="${pageContext.request.contextPath}/admin/reports?action=approve&id=<%= r.getId() %>" class="btn-action btn-approve">Approve</a>
+          <% } %>
+          <% if (!"Rejected".equals(r.getStatus())) { %>
+            <a href="${pageContext.request.contextPath}/admin/reports?action=reject&id=<%= r.getId() %>"  class="btn-action btn-reject">Reject</a>
+          <% } %>
+          <a href="${pageContext.request.contextPath}/admin/reports?action=delete&id=<%= r.getId() %>"
+             class="btn-action btn-delete"
+             onclick="return confirm('Delete this report and all its images permanently?')">Delete</a>
         </td>
       </tr>
       <% } %>
@@ -114,5 +167,22 @@
     <% } %>
   </div>
 </main>
+
+<!-- Lightbox for full-size image view -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightboxImg" src="" alt="Full size report image">
+</div>
+
+<script>
+  function openLightbox(src) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
 </body>
 </html>

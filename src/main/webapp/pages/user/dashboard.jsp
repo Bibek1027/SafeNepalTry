@@ -150,7 +150,7 @@
 </head>
 <body>
 <div class="main-wrapper">
-    <jsp:include page="../../components/header.jsp" />
+    <jsp:include page="../../components/app-header.jsp" />
 
     <div class="page-banner">
         <div class="banner-content">
@@ -196,7 +196,7 @@
                     <div class="report-info">
                         <h4><%= r.getDisasterType() %></h4>
                         <div class="meta">
-                            <span>📍 <%= r.getLocation() %></span>
+                            <span>📍 <%= r.getLocationName() %></span>
                         </div>
                         <div class="desc"><%= r.getDescription() %></div>
                     </div>

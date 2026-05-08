@@ -62,20 +62,20 @@
 </head>
 <body>
 <aside class="sidebar">
-  <div class="brand"><span>🛡️</span> <span>SAFENEPAL</span></div>
+  <div class="brand">SAFENEPAL</div>
   <nav>
-    <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link"><span class="icon">📊</span> <span>Dashboard</span></a>
-    <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link"><span class="icon">📋</span> <span>Reports</span></a>
-    <a href="${pageContext.request.contextPath}/admin/users" class="nav-link active"><span class="icon">👥</span> <span>Users</span></a>
-    <a href="${pageContext.request.contextPath}/admin/alerts" class="nav-link"><span class="icon">🔔</span> <span>Alerts</span></a>
+    <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link"><span class="icon">D</span> <span>Dashboard</span></a>
+    <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link"><span class="icon">R</span> <span>Reports</span></a>
+    <a href="${pageContext.request.contextPath}/admin/users" class="nav-link active"><span class="icon">U</span> <span>Users</span></a>
+    <a href="${pageContext.request.contextPath}/admin/alerts" class="nav-link"><span class="icon">A</span> <span>Alerts</span></a>
   </nav>
-  <div class="logout"><a href="${pageContext.request.contextPath}/logout" class="nav-link"><span class="icon">🚪</span> <span>Logout</span></a></div>
+  <div class="logout"><a href="${pageContext.request.contextPath}/logout" class="nav-link"><span class="icon">L</span> <span>Logout</span></a></div>
 </aside>
 
 <main class="main-content">
-  <h1 class="page-title">👥 User Management</h1>
+  <h1 class="page-title">User Management</h1>
   <div class="section-card">
-    <% if (request.getParameter("msg") != null) { %><div class="alert-msg">✅ <%= request.getParameter("msg") %></div><% } %>
+    <% if (request.getParameter("msg") != null) { %><div class="alert-msg">Success: <%= request.getParameter("msg") %></div><% } %>
     <table>
       <thead>
       <tr><th>User</th><th>Contact</th><th>Role</th><th>Joined</th><th>Actions</th></tr>

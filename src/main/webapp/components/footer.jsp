@@ -69,7 +69,7 @@
 <footer class="sn-footer">
     <div class="sn-footer-inner">
         <div class="sn-footer-brand">
-            <h3>🛡️ SAFENEPAL</h3>
+            <h3>SAFENEPAL</h3>
             <p>Empowering communities across Nepal with real-time disaster reporting and emergency alerts. Together we build a safer, more resilient nation.</p>
         </div>
         <div class="sn-footer-col">

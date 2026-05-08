@@ -172,19 +172,19 @@
 </head>
 <body>
 <div class="main-wrapper">
-    <jsp:include page="../components/header.jsp" />
+    <jsp:include page="../components/app-header.jsp" />
 
     <div class="auth-page">
         <div class="auth-container">
             <div class="auth-left">
-                <div class="icon-big">🛡️</div>
+                <div class="icon-big">S</div>
                 <h2>Welcome Back to SafeNepal</h2>
                 <p>Sign in to your account to manage reports, view alerts, and help keep your community safe.</p>
                 <ul class="feature-list">
-                    <li><span>📋</span> Track your submitted reports</li>
-                    <li><span>🚨</span> Receive real-time alerts</li>
-                    <li><span>👤</span> Manage your profile</li>
-                    <li><span>🤝</span> Help build a safer Nepal</li>
+                    <li>Track your submitted reports</li>
+                    <li>Receive real-time alerts</li>
+                    <li>Manage your profile</li>
+                    <li>Help build a safer Nepal</li>
                 </ul>
             </div>
             <div class="auth-right">
@@ -192,10 +192,10 @@
                 <p class="subtitle">Enter your credentials to continue</p>
 
                 <% if (request.getAttribute("error") != null) { %>
-                    <div class="alert alert-error">⚠️ <%= request.getAttribute("error") %></div>
+                    <div class="alert alert-error">Error: <%= request.getAttribute("error") %></div>
                 <% } %>
                 <% if (request.getParameter("success") != null) { %>
-                    <div class="alert alert-success">✅ <%= request.getParameter("success") %></div>
+                    <div class="alert alert-success">Success: <%= request.getParameter("success") %></div>
                 <% } %>
 
                 <form action="${pageContext.request.contextPath}/login" method="post" id="loginForm">

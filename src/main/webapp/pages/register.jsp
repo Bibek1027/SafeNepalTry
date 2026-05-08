@@ -168,12 +168,12 @@
 </head>
 <body>
 <div class="main-wrapper">
-    <jsp:include page="../components/header.jsp" />
+    <jsp:include page="../components/app-header.jsp" />
 
     <div class="auth-page">
         <div class="auth-container">
             <div class="auth-left">
-                <div class="icon-big">🤝</div>
+                <div class="icon-big">J</div>
                 <h2>Join the SafeNepal Community</h2>
                 <p>Help us build a more resilient Nepal by reporting disasters and sharing emergency information.</p>
                 <ol class="steps">
@@ -188,7 +188,7 @@
                 <p class="subtitle">Fill in your details to get started</p>
 
                 <% if (request.getAttribute("error") != null) { %>
-                    <div class="alert">⚠️ <%= request.getAttribute("error") %></div>
+                    <div class="alert">Error: <%= request.getAttribute("error") %></div>
                 <% } %>
 
                 <form action="${pageContext.request.contextPath}/register" method="post" id="registerForm">

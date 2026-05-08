@@ -56,6 +56,12 @@ public class RegisterServlet extends HttpServlet {
                 req.getRequestDispatcher("/pages/register.jsp").forward(req, resp);
                 return;
             }
+            // Check for duplicate phone number (phone is UNI in the table)
+            if (userDAO.getUserByPhone(phone) != null) {
+                req.setAttribute("error", "Phone number already registered.");
+                req.getRequestDispatcher("/pages/register.jsp").forward(req, resp);
+                return;
+            }
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             User newUser = new User(fullName, email, phone, hashedPassword, "user");
             if (userDAO.insertUser(newUser)) {
