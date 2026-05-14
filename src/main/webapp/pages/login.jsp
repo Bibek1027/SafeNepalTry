@@ -194,6 +194,9 @@
                 <% if (request.getAttribute("error") != null) { %>
                     <div class="alert alert-error">Error: <%= request.getAttribute("error") %></div>
                 <% } %>
+                <% if (request.getParameter("suspended") != null) { %>
+                    <div class="alert alert-error">Your account has been suspended. Please contact the administrator for assistance.</div>
+                <% } %>
                 <% if (request.getParameter("success") != null) { %>
                     <div class="alert alert-success">Success: <%= request.getParameter("success") %></div>
                 <% } %>

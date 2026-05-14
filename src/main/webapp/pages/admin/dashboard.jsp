@@ -28,6 +28,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard — SafeNepal</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #f5f7fb; color: #1e293b; display: flex; min-height: 100vh; }
@@ -213,21 +214,24 @@
     <div class="brand">SAFENEPAL</div>
     <nav>
         <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link active">
-            <span class="icon">D</span> <span>Dashboard</span>
+            <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
         </a>
         <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link">
-            <span class="icon">R</span> <span>Reports</span>
+            <i class="fas fa-file-alt"></i> <span>Reports</span>
         </a>
         <a href="${pageContext.request.contextPath}/admin/users" class="nav-link">
-            <span class="icon">U</span> <span>Users</span>
+            <i class="fas fa-users"></i> <span>Users</span>
         </a>
         <a href="${pageContext.request.contextPath}/admin/alerts" class="nav-link">
-            <span class="icon">A</span> <span>Alerts</span>
+            <i class="fas fa-exclamation-triangle"></i> <span>Alerts</span>
+        </a>
+        <a href="${pageContext.request.contextPath}/admin/feedback" class="nav-link">
+            <i class="fas fa-comments"></i> <span>Feedback</span>
         </a>
     </nav>
     <div class="logout">
         <a href="${pageContext.request.contextPath}/logout" class="nav-link">
-            <span class="icon">L</span> <span>Logout</span>
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
         </a>
     </div>
 </aside>

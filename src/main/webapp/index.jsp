@@ -4,6 +4,7 @@
 <%@ page import="com.safenepal.alert.model.Alert" %>
 <%@ page import="com.safenepal.report.model.dao.ReportDAO" %>
 <%@ page import="com.safenepal.alert.model.dao.AlertDAO" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <%
     boolean isLoggedIn = (session != null && session.getAttribute("userId") != null);
     String userName = isLoggedIn ? (String) session.getAttribute("userName") : null;
@@ -300,6 +301,10 @@
                 <% } %>
             </h1>
             <p>Nepal's community-driven platform for disaster reporting and emergency alerts. Report incidents, receive real-time warnings, and help build a more resilient community.</p>
+            <form class="hero-search" method="get" action="${pageContext.request.contextPath}/search" style="max-width:520px;margin:0 auto 20px;display:flex;gap:10px;flex-wrap:wrap;">
+                <input type="search" name="q" placeholder="Search alerts &amp; verified reports…" maxlength="200" style="flex:1;min-width:200px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.12);color:#fff;font-size:14px;font-family:inherit;">
+                <button type="submit" class="hero-btn hero-btn-primary" style="padding:12px 22px;">Search</button>
+            </form>
             <div class="hero-actions">
                 <% if (isLoggedIn) { %>
                     <a href="user/report" class="hero-btn hero-btn-primary">+ Submit Emergency Report</a>

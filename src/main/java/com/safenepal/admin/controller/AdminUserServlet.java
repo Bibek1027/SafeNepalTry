@@ -28,6 +28,14 @@ public class AdminUserServlet extends HttpServlet {
                 int userId = Integer.parseInt(idStr);
 
                 switch (action) {
+                    case "suspend":
+                        userDAO.updateStatus(userId, "suspended");
+                        resp.sendRedirect(req.getContextPath() + "/admin/users?msg=User suspended.");
+                        return;
+                    case "unsuspend":
+                        userDAO.updateStatus(userId, "active");
+                        resp.sendRedirect(req.getContextPath() + "/admin/users?msg=User unsuspended.");
+                        return;
                     case "delete":
                         userDAO.deleteUser(userId);
                         resp.sendRedirect(req.getContextPath() + "/admin/users?msg=User deleted.");

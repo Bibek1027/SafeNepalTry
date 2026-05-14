@@ -6,6 +6,7 @@ import com.safenepal.utils.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 // DAO class for all database operations related to reports table
 public class ReportDAO {
@@ -84,6 +85,40 @@ public class ReportDAO {
 
             while (rs.next()) {
                 list.add(mapRow(rs));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Search approved community reports by disaster type, location, district, province, or description.
+     */
+    public List<Report> searchApprovedReports(String keyword) throws SQLException {
+        if (keyword == null || keyword.isBlank()) {
+            return new ArrayList<>();
+        }
+        String term = "%" + keyword.toLowerCase(Locale.ROOT).trim() + "%";
+        String query = "SELECT r.*, u.full_name AS reporter_name, l.location_name " +
+                "FROM reports r " +
+                "JOIN users u ON r.user_id = u.user_id " +
+                "JOIN locations l ON r.location_id = l.location_id " +
+                "WHERE r.status = 'Approved' AND (" +
+                "LOWER(r.disaster_type) LIKE ? OR LOWER(l.location_name) LIKE ? OR " +
+                "LOWER(IFNULL(l.district,'')) LIKE ? OR LOWER(IFNULL(l.province,'')) LIKE ? OR " +
+                "LOWER(r.description) LIKE ?) " +
+                "ORDER BY r.reported_at DESC";
+        List<Report> list = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(query)) {
+
+            for (int i = 1; i <= 5; i++) {
+                st.setString(i, term);
+            }
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
             }
         }
         return list;

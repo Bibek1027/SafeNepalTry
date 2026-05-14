@@ -1,5 +1,7 @@
 package com.safenepal.filter;
 
+import com.safenepal.user.model.User;
+import com.safenepal.user.model.dao.UserDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 // Filter to restrict access based on login status and role
 @WebFilter("/*")
@@ -71,6 +74,31 @@ public class AuthFilter implements Filter {
         // User-only area protection
         if (uri.contains("/user/") && !"user".equals(role)) {
             httpResponse.sendRedirect(httpRequest.getContextPath() + "/errorpage/error404.jsp");
+            return;
+        }
+
+        // Check if user is suspended (only for logged-in users accessing protected areas)
+        if (isLoggedIn && !isPublicPage) {
+            try {
+                UserDAO userDAO = new UserDAO();
+                int userId = (Integer) session.getAttribute("userId");
+                User user = userDAO.getUserById(userId);
+                
+                if (user != null && "suspended".equals(user.getStatus())) {
+                    // Invalidate session and redirect to login with suspension message
+                    session.invalidate();
+                    httpResponse.sendRedirect(httpRequest.getContextPath() + "/login?suspended=true");
+                    return;
+                }
+            } catch (SQLException e) {
+                System.err.println("[AuthFilter] Error checking user suspension: " + e.getMessage());
+                // On error, allow access but log the issue
+            }
+        }
+
+        // Public disaster search — no login required; must be before the login redirect
+        if (uri.endsWith("/search")) {
+            chain.doFilter(req, resp);
             return;
         }
 

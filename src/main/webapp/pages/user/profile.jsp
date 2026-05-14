@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.safenepal.user.model.User" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <%
     if (session == null || session.getAttribute("userId") == null) {
         response.sendRedirect(request.getContextPath() + "/login");

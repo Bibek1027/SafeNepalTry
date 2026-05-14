@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.safenepal.notification.model.Notification" %>
 <%@ page import="com.safenepal.notification.model.dao.NotificationDAO" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <%
     if (session == null || session.getAttribute("userId") == null) {
         response.sendRedirect(request.getContextPath() + "/login");
@@ -195,20 +196,20 @@
         <div class="notif-card">
             <% if (notifications == null || notifications.isEmpty()) { %>
             <div class="empty-state">
-                <div class="icon">N</div>
+                <div class="icon"><i class="fas fa-bell"></i></div>
                 <h3>No Notifications Yet</h3>
                 <p>You'll see updates here when admins review your reports or publish new alerts.</p>
             </div>
             <% } else {
                 for (Notification n : notifications) {
                     String iconClass = "icon-default";
-                    String iconEmoji = "N";
-                    if ("Report Update".equals(n.getType())) { iconClass = "icon-approved"; iconEmoji = "R"; }
-                    else if ("Alert".equals(n.getType())) { iconClass = "icon-alert"; iconEmoji = "A"; }
-                    else if ("System".equals(n.getType())) { iconClass = "icon-default"; iconEmoji = "S"; }
+                    String iconEmoji = "fas fa-bell";
+                    if ("Report Update".equals(n.getType())) { iconClass = "icon-approved"; iconEmoji = "fas fa-clock"; }
+                    else if ("Alert".equals(n.getType())) { iconClass = "icon-alert"; iconEmoji = "fas fa-exclamation-triangle"; }
+                    else if ("System".equals(n.getType())) { iconClass = "icon-default"; iconEmoji = "fas fa-shield-alt"; }
             %>
             <div class="notif-item <%= n.isRead() ? "" : "unread" %>">
-                <div class="notif-icon <%= iconClass %>"><%= iconEmoji %></div>
+                <div class="notif-icon <%= iconClass %>"><i class="<%= iconEmoji %>"></i></div>
                 <div class="notif-body">
                     <div class="notif-title"><%= n.getTitle() %></div>
                     <div class="notif-msg"><%= n.getMessage() %></div>

@@ -15,6 +15,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manage Users — SafeNepal Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f5f7fb; color: #1e293b; display: flex; min-height: 100vh; }
@@ -45,9 +46,15 @@
     .badge { padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; }
     .badge-admin { background: #e8eaf6; color: #3949ab; }
     .badge-user { background: #f3e5f5; color: #7b1fa2; }
+    .badge-active { background: #dcfce7; color: #166534; }
+    .badge-suspended { background: #fef2f2; color: #dc2626; }
     .joined { font-size: 12px; color: #94a3b8; }
 
     .btn-action { padding: 6px 14px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 700; color: #fff; transition: all 0.2s; display: inline-block; }
+    .btn-suspend { background: #f59e0b; }
+    .btn-suspend:hover { background: #d97706; transform: translateY(-1px); }
+    .btn-unsuspend { background: #10b981; }
+    .btn-unsuspend:hover { background: #059669; transform: translateY(-1px); }
     .btn-delete { background: #ef4444; }
     .btn-delete:hover { background: #dc2626; transform: translateY(-1px); }
     .protected { font-size: 12px; color: #94a3b8; font-weight: 500; font-style: italic; }
@@ -64,12 +71,13 @@
 <aside class="sidebar">
   <div class="brand">SAFENEPAL</div>
   <nav>
-    <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link"><span class="icon">D</span> <span>Dashboard</span></a>
-    <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link"><span class="icon">R</span> <span>Reports</span></a>
-    <a href="${pageContext.request.contextPath}/admin/users" class="nav-link active"><span class="icon">U</span> <span>Users</span></a>
-    <a href="${pageContext.request.contextPath}/admin/alerts" class="nav-link"><span class="icon">A</span> <span>Alerts</span></a>
+    <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+    <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
+    <a href="${pageContext.request.contextPath}/admin/users" class="nav-link active"><i class="fas fa-users"></i> <span>Users</span></a>
+    <a href="${pageContext.request.contextPath}/admin/alerts" class="nav-link"><i class="fas fa-exclamation-triangle"></i> <span>Alerts</span></a>
+    <a href="${pageContext.request.contextPath}/admin/feedback" class="nav-link"><i class="fas fa-comments"></i> <span>Feedback</span></a>
   </nav>
-  <div class="logout"><a href="${pageContext.request.contextPath}/logout" class="nav-link"><span class="icon">L</span> <span>Logout</span></a></div>
+  <div class="logout"><a href="${pageContext.request.contextPath}/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></div>
 </aside>
 
 <main class="main-content">
@@ -78,7 +86,7 @@
     <% if (request.getParameter("msg") != null) { %><div class="alert-msg">Success: <%= request.getParameter("msg") %></div><% } %>
     <table>
       <thead>
-      <tr><th>User</th><th>Contact</th><th>Role</th><th>Joined</th><th>Actions</th></tr>
+      <tr><th>User</th><th>Contact</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr>
       </thead>
       <tbody>
       <% if (users != null) { for (User u : users) { %>
@@ -89,9 +97,15 @@
           <div class="user-contact"><%= u.getPhone() %></div>
         </td>
         <td><span class="badge badge-<%= u.getRole() %>"><%= u.getRole().toUpperCase() %></span></td>
+        <td><span class="badge badge-<%= "suspended".equals(u.getStatus()) ? "suspended" : "active" %>"><%= u.getStatus() != null ? u.getStatus().toUpperCase() : "ACTIVE" %></span></td>
         <td><span class="joined"><%= u.getCreatedAt() != null ? u.getCreatedAt().toString().substring(0, 10) : "—" %></span></td>
         <td>
           <% if (!"admin".equals(u.getRole())) { %>
+            <% if ("suspended".equals(u.getStatus())) { %>
+              <a href="${pageContext.request.contextPath}/admin/users?action=unsuspend&id=<%= u.getId() %>" class="btn-action btn-unsuspend">Unsuspend</a>
+            <% } else { %>
+              <a href="${pageContext.request.contextPath}/admin/users?action=suspend&id=<%= u.getId() %>" class="btn-action btn-suspend" onclick="return confirm('Suspend this user? They will not be able to access the system.')">Suspend</a>
+            <% } %>
             <a href="${pageContext.request.contextPath}/admin/users?action=delete&id=<%= u.getId() %>" class="btn-action btn-delete" onclick="return confirm('Permanently delete this user?')">Delete</a>
           <% } else { %>
             <span class="protected">Protected</span>

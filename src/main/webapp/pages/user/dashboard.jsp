@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.safenepal.report.model.Report" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <%
     if (session == null || session.getAttribute("userId") == null) {
         response.sendRedirect(request.getContextPath() + "/login");
@@ -187,7 +188,7 @@
 
             <% if (myReports == null || myReports.isEmpty()) { %>
                 <div class="empty-state">
-                    <div class="icon">📝</div>
+                    <div class="icon"><i class="fas fa-file-alt"></i></div>
                     <h3>No Reports Yet</h3>
                     <p>You haven't submitted any disaster reports. Click "New Report" to get started.</p>
                 </div>

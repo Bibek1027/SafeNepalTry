@@ -6,6 +6,7 @@ import com.safenepal.utils.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 // DAO class for all database operations related to alerts table
 public class AlertDAO {
@@ -42,6 +43,40 @@ public class AlertDAO {
 
             while (rs.next()) {
                 list.add(mapRow(rs));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Search alerts by type, message, or location fields.
+     */
+    public List<Alert> searchAlerts(String keyword) throws SQLException {
+        if (keyword == null || keyword.isBlank()) {
+            return new ArrayList<>();
+        }
+        String term = "%" + keyword.toLowerCase(Locale.ROOT).trim() + "%";
+        String query = "SELECT a.*, u.full_name AS admin_name, l.location_name " +
+                "FROM alerts a " +
+                "JOIN users u ON a.admin_id = u.user_id " +
+                "JOIN locations l ON a.location_id = l.location_id " +
+                "WHERE (" +
+                "LOWER(IFNULL(a.alert_type,'')) LIKE ? OR LOWER(IFNULL(a.message,'')) LIKE ? OR " +
+                "LOWER(l.location_name) LIKE ? OR LOWER(IFNULL(l.district,'')) LIKE ? OR " +
+                "LOWER(IFNULL(l.province,'')) LIKE ?) " +
+                "ORDER BY a.created_at DESC";
+        List<Alert> list = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(query)) {
+
+            for (int i = 1; i <= 5; i++) {
+                st.setString(i, term);
+            }
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
             }
         }
         return list;

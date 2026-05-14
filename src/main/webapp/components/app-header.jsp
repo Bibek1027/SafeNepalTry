@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%-- Version 1.1 - Force Recompile --%>
 <%@ page import="com.safenepal.notification.model.dao.NotificationDAO" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <%
   boolean isLoggedInHeader = (session != null && session.getAttribute("userId") != null);
   String userNameHeader = isLoggedInHeader ? (String) session.getAttribute("userName") : null;
@@ -253,18 +254,20 @@
     SAFENEPAL
   </a>
   <div class="sn-nav-links">
-    <a href="${pageContext.request.contextPath}/index.jsp">Home</a>
+    <a href="${pageContext.request.contextPath}/index.jsp"><i class="fas fa-home"></i></a>
+    <a href="${pageContext.request.contextPath}/search"><i class="fas fa-search"></i> Search</a>
     <% if (isLoggedInHeader) { %>
       <% if ("admin".equals(userRoleHeader)) { %>
-        <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-accent">Admin Panel</a>
+        <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-accent"><i class="fas fa-shield-alt"></i> Admin Panel</a>
       <% } else { %>
-        <a href="${pageContext.request.contextPath}/user/report">Report</a>
-        <a href="${pageContext.request.contextPath}/user/profile">My Profile</a>
+        <a href="${pageContext.request.contextPath}/user/report"><i class="fas fa-file-alt"></i> Report</a>
+        <a href="${pageContext.request.contextPath}/user/feedback"><i class="fas fa-comments"></i> Feedback</a>
+        <a href="${pageContext.request.contextPath}/user/profile"><i class="fas fa-user-circle"></i> Profile</a>
 
         <!-- Notification Bell -->
         <div class="notif-bell-wrap" id="notifWrap">
           <a href="javascript:void(0)" class="notif-bell" id="notifBell" onclick="toggleNotifDropdown(event)" title="Notifications">
-            N
+            <i class="fas fa-bell"></i>
             <% if (headerUnreadCount > 0) { %>
               <span class="notif-badge" id="notifBadge"><%= headerUnreadCount > 9 ? "9+" : headerUnreadCount %></span>
             <% } %>
