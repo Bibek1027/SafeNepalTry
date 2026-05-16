@@ -2,12 +2,12 @@ package com.safenepal.notification.controller;
 
 import com.safenepal.notification.model.Notification;
 import com.safenepal.notification.model.dao.NotificationDAO;
+import com.safenepal.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,13 +21,12 @@ public class NotificationDataServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (!SessionUtils.isLoggedIn(req)) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        int userId = (int) session.getAttribute("userId");
+        int userId = SessionUtils.getUserId(req);
         resp.setContentType("application/json; charset=UTF-8");
 
         try {

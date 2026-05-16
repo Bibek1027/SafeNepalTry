@@ -165,6 +165,22 @@ public class UserDAO {
         return ids;
     }
 
+    // Get all active regular users (full objects) — used by NotificationService for email notifications
+    public List<User> getAllActiveUsers() throws SQLException {
+        String query = "SELECT * FROM users WHERE role = 'user' AND status = 'active'";
+        List<User> users = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(query);
+             ResultSet rs = st.executeQuery()) {
+
+            while (rs.next()) {
+                users.add(mapRow(rs));
+            }
+        }
+        return users;
+    }
+
     // Helper method: map a ResultSet row to a User object
     private User mapRow(ResultSet rs) throws SQLException {
         User user = new User();

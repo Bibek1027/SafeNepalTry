@@ -2,13 +2,13 @@ package com.safenepal.feedback.controller;
 
 import com.safenepal.feedback.model.Feedback;
 import com.safenepal.feedback.model.dao.FeedbackDAO;
+import com.safenepal.utils.SessionUtils;
 import com.safenepal.utils.ValidationUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,15 +21,14 @@ public class FeedbackServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Session check — must be a logged-in user
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (!SessionUtils.isLoggedIn(req)) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
         try {
             FeedbackDAO feedbackDAO = new FeedbackDAO();
-            int userId = (int) session.getAttribute("userId");
+            int userId = SessionUtils.getUserId(req);
             
             // Load user's feedback history
             List<Feedback> userFeedback = feedbackDAO.getFeedbackByUserId(userId);
@@ -54,8 +53,7 @@ public class FeedbackServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Session check — must be a logged-in user
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (!SessionUtils.isLoggedIn(req)) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
@@ -84,7 +82,7 @@ public class FeedbackServlet extends HttpServlet {
                 return;
             }
 
-            int userId = (int) session.getAttribute("userId");
+            int userId = SessionUtils.getUserId(req);
             Feedback feedback = new Feedback(userId, message.trim(), rating);
             
             FeedbackDAO feedbackDAO = new FeedbackDAO();

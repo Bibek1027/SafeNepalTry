@@ -2,12 +2,12 @@ package com.safenepal.user.controller;
 
 import com.safenepal.user.model.User;
 import com.safenepal.user.model.dao.UserDAO;
+import com.safenepal.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.mindrot.jbcrypt.BCrypt;
 import java.io.IOException;
 
@@ -16,9 +16,8 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session != null && session.getAttribute("userId") != null) {
-            String role = (String) session.getAttribute("role");
+        if (SessionUtils.isLoggedIn(req)) {
+            String role = SessionUtils.getRole(req);
             resp.sendRedirect("admin".equals(role) ? "admin/dashboard" : "index.jsp");
             return;
         }
@@ -59,11 +58,7 @@ public class LoginServlet extends HttpServlet {
                 req.getRequestDispatcher("/pages/login.jsp").forward(req, resp);
                 return;
             }
-            HttpSession session = req.getSession();
-            session.setAttribute("userId", userObj.getId());
-            session.setAttribute("userName", userObj.getFullName());
-            session.setAttribute("email", userObj.getEmail());
-            session.setAttribute("role", userObj.getRole());
+            SessionUtils.createLoginSession(req, userObj);
             resp.sendRedirect("admin".equals(userObj.getRole()) ? "admin/dashboard" : "index.jsp");
         } catch (Exception e) {
             req.setAttribute("error", "Login failed: " + e.getMessage());

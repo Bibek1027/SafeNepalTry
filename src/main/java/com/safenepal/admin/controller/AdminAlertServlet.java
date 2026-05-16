@@ -4,13 +4,13 @@ import com.safenepal.alert.model.Alert;
 import com.safenepal.alert.model.dao.AlertDAO;
 import com.safenepal.location.model.dao.LocationDAO;
 import com.safenepal.notification.service.NotificationService;
+import com.safenepal.utils.SessionUtils;
 import com.safenepal.utils.ValidationUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -47,8 +47,7 @@ public class AdminAlertServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        HttpSession session  = req.getSession(false);
-        int adminId  = (int) session.getAttribute("userId");
+        int adminId = SessionUtils.getUserId(req);
 
         String message  = req.getParameter("message");
         String severity = req.getParameter("severity");

@@ -381,7 +381,7 @@
 <script>
     function showModal() {
         document.getElementById('registerModal').classList.add('active');
-        setTimeout(() => { window.location.href = 'register'; }, 3500);
+        setTimeout(function() { window.location.href = 'register'; }, 3500);
     }
     document.getElementById('registerModal').addEventListener('click', function(e) {
         if (e.target === this) this.classList.remove('active');

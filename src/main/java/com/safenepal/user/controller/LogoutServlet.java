@@ -1,12 +1,12 @@
 package com.safenepal.user.controller;
 
+import com.safenepal.utils.CookieUtils;
+import com.safenepal.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -19,18 +19,12 @@ public class LogoutServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Invalidate the current session
-        HttpSession session = req.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+        SessionUtils.invalidateSession(req);
 
         // Clear the remember-me cookie
-        Cookie cookie = new Cookie("rememberedEmail", "");
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        resp.addCookie(cookie);
+        CookieUtils.clearRememberedEmail(resp);
 
         // Redirect to dashboard (publicly accessible)
         resp.sendRedirect(req.getContextPath() + "/index.jsp?success=You have been logged out successfully.");
     }
-}
+}

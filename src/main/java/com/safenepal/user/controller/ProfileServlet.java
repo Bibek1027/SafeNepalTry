@@ -1,13 +1,14 @@
 package com.safenepal.user.controller;
 
+import com.safenepal.notification.service.NotificationService;
 import com.safenepal.user.model.User;
 import com.safenepal.user.model.dao.UserDAO;
+import com.safenepal.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
@@ -20,14 +21,13 @@ public class ProfileServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (!SessionUtils.isLoggedIn(req)) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
         try {
-            int userId = (int) session.getAttribute("userId");
+            int userId = SessionUtils.getUserId(req);
             UserDAO userDAO = new UserDAO();
             User user = userDAO.getUserById(userId);
             req.setAttribute("profileUser", user);
@@ -43,13 +43,12 @@ public class ProfileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (!SessionUtils.isLoggedIn(req)) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        int userId = (int) session.getAttribute("userId");
+        int userId = SessionUtils.getUserId(req);
         String action = req.getParameter("action");
         UserDAO userDAO = new UserDAO();
 
@@ -67,8 +66,10 @@ public class ProfileServlet extends HttpServlet {
                     boolean updated = userDAO.updateProfile(userId, fullName.trim(), phone.trim());
                     if (updated) {
                         // Refresh the name shown in the header
-                        session.setAttribute("userName", fullName.trim());
+                        SessionUtils.setAttribute(req, SessionUtils.KEY_USER_NAME, fullName.trim());
                         req.setAttribute("profileSuccess", "Profile updated successfully.");
+                        // Send in-app + email notification
+                        NotificationService.notifyProfileUpdated(userId);
                     } else {
                         req.setAttribute("profileError", "Update failed. Please try again.");
                     }
@@ -93,6 +94,8 @@ public class ProfileServlet extends HttpServlet {
                     boolean updated = userDAO.updatePassword(userId, hashed);
                     if (updated) {
                         req.setAttribute("passwordSuccess", "Password changed successfully.");
+                        // Send in-app + email notification
+                        NotificationService.notifyPasswordChanged(userId);
                     } else {
                         req.setAttribute("passwordError", "Password update failed. Please try again.");
                     }

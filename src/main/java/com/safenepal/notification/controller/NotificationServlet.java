@@ -2,12 +2,12 @@ package com.safenepal.notification.controller;
 
 import com.safenepal.notification.model.Notification;
 import com.safenepal.notification.model.dao.NotificationDAO;
+import com.safenepal.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,13 +20,12 @@ public class NotificationServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Session check — must be a logged-in user
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (!SessionUtils.isLoggedIn(req)) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        int userId = (int) session.getAttribute("userId");
+        int userId = SessionUtils.getUserId(req);
         String action = req.getParameter("action");
         NotificationDAO dao = new NotificationDAO();
 

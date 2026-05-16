@@ -2,10 +2,12 @@ package com.safenepal.report.controller;
 
 import com.safenepal.location.model.Location;
 import com.safenepal.location.model.dao.LocationDAO;
+import com.safenepal.notification.service.NotificationService;
 import com.safenepal.report.model.Report;
 import com.safenepal.report.model.dao.ReportDAO;
 import com.safenepal.reportImage.model.ReportImage;
 import com.safenepal.reportImage.model.dao.ReportImageDAO;
+import com.safenepal.utils.SessionUtils;
 import com.safenepal.utils.ValidationUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -13,7 +15,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 import java.io.File;
@@ -38,8 +39,7 @@ public class ReportServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (!SessionUtils.isLoggedIn(req)) {
             resp.sendRedirect(req.getContextPath() + "/register?error=Please register to submit a report.");
             return;
         }
@@ -57,13 +57,12 @@ public class ReportServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (!SessionUtils.isLoggedIn(req)) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        int    userId = (int) session.getAttribute("userId");
+        int    userId = SessionUtils.getUserId(req);
         String type   = req.getParameter("disasterType");
         String locStr = req.getParameter("locationId");
         String desc   = req.getParameter("description");
@@ -141,6 +140,9 @@ public class ReportServlet extends HttpServlet {
             }
 
             resp.sendRedirect(req.getContextPath() + "/user/dashboard?success=Report submitted successfully!");
+
+            // Send in-app + email notification confirming submission
+            NotificationService.notifyReportSubmitted(userId, type);
 
         } catch (Exception e) {
             req.setAttribute("error", "Error submitting report: " + e.getMessage());

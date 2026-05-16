@@ -2,11 +2,11 @@ package com.safenepal.filter;
 
 import com.safenepal.user.model.User;
 import com.safenepal.user.model.dao.UserDAO;
+import com.safenepal.utils.SessionUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -34,10 +34,9 @@ public class AuthFilter implements Filter {
         
         System.out.println("[SafeNepal Debug] ContextPath: '" + contextPath + "' | URI: '" + uri + "'");
 
-        // Get current session (don't create a new one)
-        HttpSession session    = httpRequest.getSession(false);
-        boolean     isLoggedIn = (session != null && session.getAttribute("userId") != null);
-        String      role       = isLoggedIn ? (String) session.getAttribute("role") : null;
+        // Get current login status
+        boolean     isLoggedIn = SessionUtils.isLoggedIn(httpRequest);
+        String      role       = isLoggedIn ? SessionUtils.getRole(httpRequest) : null;
 
         // Always allow CSS, JS, images and error pages through
         boolean isStaticResource = uri.contains("/css/") || uri.contains("/js/")
@@ -81,12 +80,12 @@ public class AuthFilter implements Filter {
         if (isLoggedIn && !isPublicPage) {
             try {
                 UserDAO userDAO = new UserDAO();
-                int userId = (Integer) session.getAttribute("userId");
+                int userId = SessionUtils.getUserId(httpRequest);
                 User user = userDAO.getUserById(userId);
                 
                 if (user != null && "suspended".equals(user.getStatus())) {
                     // Invalidate session and redirect to login with suspension message
-                    session.invalidate();
+                    SessionUtils.invalidateSession(httpRequest);
                     httpResponse.sendRedirect(httpRequest.getContextPath() + "/login?suspended=true");
                     return;
                 }

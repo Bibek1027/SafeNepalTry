@@ -2,11 +2,11 @@ package com.safenepal.user.controller;
 
 import com.safenepal.alert.model.dao.AlertDAO;
 import com.safenepal.report.model.dao.ReportDAO;
+import com.safenepal.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
@@ -19,8 +19,8 @@ public class UserDashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        HttpSession session = req.getSession(false);
-        boolean isLoggedIn = (session != null && session.getAttribute("userId") != null);
+        HttpServletRequest httpReq = req;
+        boolean isLoggedIn = SessionUtils.isLoggedIn(httpReq);
 
         try {
             AlertDAO alertDAO = new AlertDAO();
@@ -29,7 +29,7 @@ public class UserDashboardServlet extends HttpServlet {
 
             if (isLoggedIn) {
                 // Load personal report data only for logged-in users
-                int userId = (int) session.getAttribute("userId");
+                int userId = SessionUtils.getUserId(httpReq);
                 ReportDAO reportDAO = new ReportDAO();
                 req.setAttribute("myReports",    reportDAO.getReportsByUser(userId));
                 req.setAttribute("totalReports", reportDAO.countByUser(userId));
