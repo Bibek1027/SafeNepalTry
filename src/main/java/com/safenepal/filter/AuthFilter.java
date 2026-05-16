@@ -101,6 +101,17 @@ public class AuthFilter implements Filter {
             return;
         }
 
+        // Alert/report likes & comments — any logged-in role
+        if (uri.endsWith("/user/alert/like") || uri.endsWith("/user/alert/comment")
+                || uri.endsWith("/user/report/like") || uri.endsWith("/user/report/comment")) {
+            if (!isLoggedIn) {
+                httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
+                return;
+            }
+            chain.doFilter(req, resp);
+            return;
+        }
+
         // Not logged in → redirect to login
         if (!isLoggedIn) {
             httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");

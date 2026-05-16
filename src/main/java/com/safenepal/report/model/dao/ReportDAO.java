@@ -90,6 +90,27 @@ public class ReportDAO {
         return list;
     }
 
+    /** All admin-approved community reports — public home / browse (newest first). */
+    public List<Report> getApprovedReports() throws SQLException {
+        String query = "SELECT r.*, u.full_name AS reporter_name, l.location_name " +
+                "FROM reports r " +
+                "JOIN users u ON r.user_id = u.user_id " +
+                "JOIN locations l ON r.location_id = l.location_id " +
+                "WHERE r.status = 'Approved' " +
+                "ORDER BY r.reported_at DESC";
+        List<Report> list = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(query);
+             ResultSet rs = st.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        }
+        return list;
+    }
+
     /**
      * Search approved community reports by disaster type, location, district, province, or description.
      */
