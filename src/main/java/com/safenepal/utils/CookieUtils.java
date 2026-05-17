@@ -19,8 +19,13 @@ public class CookieUtils {
     // Prevent instantiation
     private CookieUtils() {}
 
+
     /**
-     * Sets a cookie with the given name, value, and max age.
+     * description: Sets a cookie with the given name, value, and max age.
+     * @param response
+     * @param name
+     * @param value
+     * @param maxAge
      */
     public static void setCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
@@ -30,14 +35,20 @@ public class CookieUtils {
     }
 
     /**
-     * Sets a cookie with default expiry (30 days).
+     * description: Sets a cookie with default expiry (30 days).
+     * @param response
+     * @param name
+     * @param value
      */
     public static void setCookie(HttpServletResponse response, String name, String value) {
         setCookie(response, name, value, DEFAULT_MAX_AGE);
     }
 
     /**
-     * Retrieves a cookie value by name, or null if not found.
+     * description: Retrieves a cookie value by name, or null if not found.
+     * @param request
+     * @param name
+     * @return
      */
     public static String getCookieValue(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
@@ -52,7 +63,9 @@ public class CookieUtils {
     }
 
     /**
-     * Deletes a cookie by setting its max age to 0.
+     * description: Deletes a cookie by setting its max age to 0.
+     * @param response
+     * @param name
      */
     public static void deleteCookie(HttpServletResponse response, String name) {
         Cookie cookie = new Cookie(name, "");
@@ -62,21 +75,26 @@ public class CookieUtils {
     }
 
     /**
-     * Saves the user's email in a "Remember Me" cookie.
+     * description: Saves the user's email in a "Remember Me" cookie.
+     * @param response
+     * @param email
      */
     public static void setRememberedEmail(HttpServletResponse response, String email) {
         setCookie(response, REMEMBERED_EMAIL, email);
     }
 
     /**
-     * Retrieves the remembered email from cookie, or null.
+     * description: Retrieves the remembered email from cookie, or null.
+     * @param request
+     * @return
      */
     public static String getRememberedEmail(HttpServletRequest request) {
         return getCookieValue(request, REMEMBERED_EMAIL);
     }
 
     /**
-     * Clears the remembered email cookie.
+     * description:  Clears the remembered email cookie.
+     * @param response
      */
     public static void clearRememberedEmail(HttpServletResponse response) {
         deleteCookie(response, REMEMBERED_EMAIL);

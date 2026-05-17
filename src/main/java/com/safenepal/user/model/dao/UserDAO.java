@@ -10,7 +10,13 @@ import java.util.List;
 // DAO class for all database operations related to users table
 public class UserDAO {
 
-    // Insert a new user — immediately active, no approval needed
+    /**
+     * description: Insert a new user — immediately active, no approval needed
+     *
+     * @param user
+     * @return
+     * @throws SQLException
+     */
     public boolean insertUser(User user) throws SQLException {
         String query = "INSERT INTO users (full_name, email, phone, password, role) VALUES (?,?,?,?,?)";
         try (Connection conn = DBConnection.getConnection();
@@ -27,7 +33,13 @@ public class UserDAO {
         }
     }
 
-    // Find user by email — used for login
+    /**
+     *
+     * description Find user by email — used for login
+     * @param email
+     * @return
+     * @throws SQLException
+     */
     public User getUserByEmail(String email) throws SQLException {
         String query = "SELECT * FROM users WHERE email = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -43,7 +55,12 @@ public class UserDAO {
         return null;
     }
 
-    // Find user by phone — used for duplicate check during registration
+    /**
+     * description: Find user by phone — used for duplicate check during registration
+     * @param phone
+     * @return
+     * @throws SQLException
+     */
     public User getUserByPhone(String phone) throws SQLException {
         String query = "SELECT * FROM users WHERE phone = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -59,7 +76,11 @@ public class UserDAO {
         return null;
     }
 
-    // Get all regular users (for admin management page)
+    /**
+     * description: Get all regular users (for admin management page)
+     * @return
+     * @throws SQLException
+     */
     public List<User> getAllUsers() throws SQLException {
         String query = "SELECT * FROM users WHERE role = 'user' ORDER BY created_at DESC";
         List<User> users = new ArrayList<>();
@@ -75,8 +96,11 @@ public class UserDAO {
         return users;
     }
 
-
-    // Count total registered users
+    /**
+     * description: Count total registered users
+     * @return
+     * @throws SQLException
+     */
     public int countTotalUsers() throws SQLException {
         String query = "SELECT COUNT(*) FROM users WHERE role = 'user'";
         try (Connection conn = DBConnection.getConnection();
@@ -88,7 +112,12 @@ public class UserDAO {
         return 0;
     }
 
-    // Get a single user by their primary key — used by profile page
+    /**
+     * description: Get a single user by their primary key — used by profile page
+     * @param id
+     * @return
+     * @throws SQLException
+     */
     public User getUserById(int id) throws SQLException {
         String query = "SELECT * FROM users WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -101,7 +130,14 @@ public class UserDAO {
         return null;
     }
 
-    // Update name and phone for a user — used by profile update
+    /**
+     * description: Update name and phone for a user — used by profile update
+     * @param id
+     * @param fullName
+     * @param phone
+     * @return
+     * @throws SQLException
+     */
     public boolean updateProfile(int id, String fullName, String phone) throws SQLException {
         String query = "UPDATE users SET full_name = ?, phone = ? WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -114,7 +150,13 @@ public class UserDAO {
         }
     }
 
-    // Update hashed password for a user — used by change password form
+    /**
+     * decription:  Update hashed password for a user — used by change password form
+     * @param id
+     * @param hashedPassword
+     * @return
+     * @throws SQLException
+     */
     public boolean updatePassword(int id, String hashedPassword) throws SQLException {
         String query = "UPDATE users SET password = ? WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -126,7 +168,13 @@ public class UserDAO {
         }
     }
 
-    // Update user status (active/suspended) — used by admin panel
+    /**
+     * description: Update user status (active/suspended) — used by admin panel
+     * @param userId
+     * @param status
+     * @return
+     * @throws SQLException
+     */
     public boolean updateStatus(int userId, String status) throws SQLException {
         String query = "UPDATE users SET status = ? WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -138,7 +186,12 @@ public class UserDAO {
         }
     }
 
-    // Delete a user by ID — used by admin panel
+    /**
+     * description: Delete a user by ID — used by admin panel
+     * @param userId
+     * @return
+     * @throws SQLException
+     */
     public boolean deleteUser(int userId) throws SQLException {
         String query = "DELETE FROM users WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -149,7 +202,12 @@ public class UserDAO {
         }
     }
 
-    // Get all active regular user IDs — used by NotificationService to broadcast alert notifications
+    /**
+     * description: Get all active regular user IDs
+     * used by NotificationService to broadcast alert notifications
+     * @return
+     * @throws SQLException
+     */
     public List<Integer> getAllActiveUserIds() throws SQLException {
         String query = "SELECT user_id FROM users WHERE role = 'user' AND status = 'active'";
         List<Integer> ids = new ArrayList<>();
@@ -165,7 +223,12 @@ public class UserDAO {
         return ids;
     }
 
-    // Get all active regular users (full objects) — used by NotificationService for email notifications
+    /**
+     * description: Get all active regular users (full objects)
+     * — used by NotificationService for email notifications
+     * @return
+     * @throws SQLException
+     */
     public List<User> getAllActiveUsers() throws SQLException {
         String query = "SELECT * FROM users WHERE role = 'user' AND status = 'active'";
         List<User> users = new ArrayList<>();
@@ -181,7 +244,12 @@ public class UserDAO {
         return users;
     }
 
-    // Helper method: map a ResultSet row to a User object
+    /**
+     * description: Helper method: map a ResultSet row to a User object
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     private User mapRow(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("user_id"));

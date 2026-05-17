@@ -11,7 +11,13 @@ import java.util.Locale;
 // DAO class for all database operations related to reports table
 public class ReportDAO {
 
-    // Insert a new disaster report and return the generated report ID (-1 on failure)
+    /**
+     * description: Insert a new disaster report and return the generated report ID (-1 on failure)
+     *
+     * @param report
+     * @return
+     * @throws SQLException
+     */
     public int insertReport(Report report) throws SQLException {
         String query = "INSERT INTO reports (user_id, disaster_type, location_id, description) VALUES (?,?,?,?)";
         try (Connection conn = DBConnection.getConnection();
@@ -31,7 +37,13 @@ public class ReportDAO {
         return -1;
     }
 
-    // Fetch a single report by its ID — used when sending notifications after approve/reject
+    /**
+     * description: Fetch a single report by its ID — used when sending notifications after approve/reject
+     *
+     * @param reportId
+     * @return
+     * @throws SQLException
+     */
     public Report getReportById(int reportId) throws SQLException {
         String query = "SELECT r.*, u.full_name AS reporter_name, l.location_name " +
                 "FROM reports r " +
@@ -48,7 +60,12 @@ public class ReportDAO {
         return null;
     }
 
-    // Fetch all reports (admin view) — joined with user full_name
+    /**
+     * description: Fetch all reports (admin view) — joined with user full_name
+     *
+     * @return
+     * @throws SQLException
+     */
     public List<Report> getAllReports() throws SQLException {
         String query = "SELECT r.*, u.full_name AS reporter_name, l.location_name " +
                 "FROM reports r " +
@@ -68,7 +85,13 @@ public class ReportDAO {
         return list;
     }
 
-    // Fetch reports submitted by a specific user
+    /**
+     * description: Fetch reports submitted by a specific user
+     *
+     * @param userId
+     * @return
+     * @throws SQLException
+     */
     public List<Report> getReportsByUser(int userId) throws SQLException {
         String query = "SELECT r.*, u.full_name AS reporter_name, l.location_name " +
                 "FROM reports r " +
@@ -90,7 +113,12 @@ public class ReportDAO {
         return list;
     }
 
-    /** All admin-approved community reports — public home / browse (newest first). */
+    /**
+     * description: All admin-approved community reports — public home / browse (newest first).
+     *
+     * @return
+     * @throws SQLException
+     */
     public List<Report> getApprovedReports() throws SQLException {
         String query = "SELECT r.*, u.full_name AS reporter_name, l.location_name " +
                 "FROM reports r " +
@@ -112,7 +140,12 @@ public class ReportDAO {
     }
 
     /**
-     * Search approved community reports by disaster type, location, district, province, or description.
+     * description: Search approved community reports by disaster type,
+     * location, district, province, or description.
+     *
+     * @param keyword
+     * @return
+     * @throws SQLException
      */
     public List<Report> searchApprovedReports(String keyword) throws SQLException {
         if (keyword == null || keyword.isBlank()) {
@@ -145,7 +178,14 @@ public class ReportDAO {
         return list;
     }
 
-    // Update the status of a report (Approved / Rejected)
+    /**
+     * descrtiption: Update the status of a report (Approved / Rejected)
+     *
+     * @param reportId
+     * @param status
+     * @return
+     * @throws SQLException
+     */
     public boolean updateStatus(int reportId, String status) throws SQLException {
         String query = "UPDATE reports SET status = ? WHERE report_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -157,7 +197,13 @@ public class ReportDAO {
         }
     }
 
-    // Delete a report by ID
+    /**
+     * description: Delete a report by ID
+     *
+     * @param reportId
+     * @return
+     * @throws SQLException
+     */
     public boolean deleteReport(int reportId) throws SQLException {
         String query = "DELETE FROM reports WHERE report_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -169,8 +215,13 @@ public class ReportDAO {
     }
 
 
-
-    // Count reports by status — used for dashboard stats
+    /**
+     * description: Count reports by status — used for dashboard stats
+     *
+     * @param status
+     * @return
+     * @throws SQLException
+     */
     public int countByStatus(String status) throws SQLException {
         String query = "SELECT COUNT(*) FROM reports WHERE status = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -183,7 +234,13 @@ public class ReportDAO {
         return 0;
     }
 
-    // Count total reports by a specific user
+    /**
+     * description: Count total reports by a specific user
+     *
+     * @param userId
+     * @return
+     * @throws SQLException
+     */
     public int countByUser(int userId) throws SQLException {
         String query = "SELECT COUNT(*) FROM reports WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -196,7 +253,13 @@ public class ReportDAO {
         return 0;
     }
 
-    // Helper method: map a ResultSet row to a Report object
+    /**
+     * description: Helper method: map a ResultSet row to a Report object
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     private Report mapRow(ResultSet rs) throws SQLException {
         Report r = new Report();
         r.setId(rs.getInt("report_id"));
@@ -206,8 +269,14 @@ public class ReportDAO {
         r.setDescription(rs.getString("description"));
         r.setStatus(rs.getString("status"));
         r.setReportedAt(rs.getTimestamp("reported_at"));
-        try { r.setLocationName(rs.getString("location_name")); } catch (Exception ignored) {}
-        try { r.setReporterName(rs.getString("reporter_name")); } catch (Exception ignored) {}
+        try { r.setLocationName(rs.getString("location_name")); }
+        catch (Exception ignored) {
+
+        }
+        try { r.setReporterName(rs.getString("reporter_name")); }
+        catch (Exception ignored) {
+
+        }
         return r;
     }
 }

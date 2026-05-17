@@ -10,7 +10,13 @@ import java.util.List;
 // DAO class for all database operations related to feedback table
 public class FeedbackDAO {
 
-    // Insert a new feedback
+    /**
+     * description: Insert a new feedback
+     *
+     * @param feedback
+     * @return
+     * @throws SQLException
+     */
     public boolean insertFeedback(Feedback feedback) throws SQLException {
         String query = "INSERT INTO feedback (user_id, message, rating) VALUES (?,?,?)";
         try (Connection conn = DBConnection.getConnection();
@@ -33,7 +39,12 @@ public class FeedbackDAO {
         }
     }
 
-    // Get all feedback for admin view
+    /**
+     * description: Get all feedback for admin view
+     *
+     * @return
+     * @throws SQLException
+     */
     public List<Feedback> getAllFeedback() throws SQLException {
         String query = "SELECT * FROM feedback ORDER BY created_at DESC";
         List<Feedback> feedbackList = new ArrayList<>();
@@ -46,7 +57,8 @@ public class FeedbackDAO {
                 Feedback feedback = mapRow(rs);
                 feedbackList.add(feedback);
                 System.out.println("[FeedbackDAO] Found feedback: ID=" + feedback.getFeedbackId() + 
-                                 ", Rating=" + feedback.getRating() + ", Message=" + feedback.getMessage().substring(0, Math.min(20, feedback.getMessage().length())));
+                                 ", Rating=" + feedback.getRating() + ", Message="
+                                + feedback.getMessage().substring(0, Math.min(20, feedback.getMessage().length())));
             }
             System.out.println("[FeedbackDAO] Total feedback loaded: " + feedbackList.size());
         } catch (SQLException e) {
@@ -56,7 +68,13 @@ public class FeedbackDAO {
         return feedbackList;
     }
 
-    // Get feedback by a specific user
+    /**
+     * description: Get feedback by a specific user
+     *
+     * @param userId
+     * @return
+     * @throws SQLException
+     */
     public List<Feedback> getFeedbackByUserId(int userId) throws SQLException {
         String query = "SELECT * FROM feedback WHERE user_id = ? ORDER BY created_at DESC";
         List<Feedback> feedbackList = new ArrayList<>();
@@ -74,7 +92,13 @@ public class FeedbackDAO {
         return feedbackList;
     }
 
-    // Delete feedback by ID
+    /**
+     * description: Delete feedback by ID
+     *
+     * @param feedbackId
+     * @return
+     * @throws SQLException
+     */
     public boolean deleteFeedback(int feedbackId) throws SQLException {
         String query = "DELETE FROM feedback WHERE feedback_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -85,7 +109,12 @@ public class FeedbackDAO {
         }
     }
 
-    // Get average rating for all feedback
+    /**
+     * description:  Get average rating for all feedback
+     *
+     * @return
+     * @throws SQLException
+     */
     public double getAverageRating() throws SQLException {
         String query = "SELECT AVG(rating) as avg_rating FROM feedback";
         try (Connection conn = DBConnection.getConnection();
@@ -99,7 +128,12 @@ public class FeedbackDAO {
         return 0.0;
     }
 
-    // Get total feedback count
+    /**
+     * description: Get total feedback count
+     *
+     * @return
+     * @throws SQLException
+     */
     public int getFeedbackCount() throws SQLException {
         String query = "SELECT COUNT(*) FROM feedback";
         try (Connection conn = DBConnection.getConnection();
@@ -113,7 +147,13 @@ public class FeedbackDAO {
         return 0;
     }
 
-    // Helper method: map a ResultSet row to a Feedback object
+    /**
+     * description: Helper method: map a ResultSet row to a Feedback object
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     private Feedback mapRow(ResultSet rs) throws SQLException {
         Feedback feedback = new Feedback();
         feedback.setFeedbackId(rs.getInt("feedback_id"));

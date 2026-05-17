@@ -6,6 +6,13 @@ import java.sql.*;
 
 public class AlertLikeDAO {
 
+    /**
+     *
+     * @param alertId
+     * @param userId
+     * @return
+     * @throws SQLException
+     */
     public boolean toggleLike(int alertId, int userId) throws SQLException {
         if (hasUserLiked(alertId, userId)) {
             return removeLike(alertId, userId);
@@ -13,6 +20,13 @@ public class AlertLikeDAO {
         return addLike(alertId, userId);
     }
 
+    /**
+     *
+     * @param alertId
+     * @param userId
+     * @return
+     * @throws SQLException
+     */
     public boolean addLike(int alertId, int userId) throws SQLException {
         String query = "INSERT INTO alert_likes (alert_id, user_id) VALUES (?,?)";
         try (Connection conn = DBConnection.getConnection();
@@ -23,6 +37,13 @@ public class AlertLikeDAO {
         }
     }
 
+    /**
+     *
+     * @param alertId
+     * @param userId
+     * @return
+     * @throws SQLException
+     */
     public boolean removeLike(int alertId, int userId) throws SQLException {
         String query = "DELETE FROM alert_likes WHERE alert_id = ? AND user_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -33,6 +54,13 @@ public class AlertLikeDAO {
         }
     }
 
+    /**
+     *
+     * @param alertId
+     * @param userId
+     * @return
+     * @throws SQLException
+     */
     public boolean hasUserLiked(int alertId, int userId) throws SQLException {
         String query = "SELECT 1 FROM alert_likes WHERE alert_id = ? AND user_id = ? LIMIT 1";
         try (Connection conn = DBConnection.getConnection();
@@ -45,6 +73,12 @@ public class AlertLikeDAO {
         }
     }
 
+    /**
+     *
+     * @param alertId
+     * @return
+     * @throws SQLException
+     */
     public int countByAlertId(int alertId) throws SQLException {
         String query = "SELECT COUNT(*) FROM alert_likes WHERE alert_id = ?";
         try (Connection conn = DBConnection.getConnection();

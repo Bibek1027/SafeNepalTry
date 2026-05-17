@@ -9,6 +9,12 @@ import java.util.List;
 
 public class AlertCommentDAO {
 
+    /**
+     *
+     * @param comment
+     * @return
+     * @throws SQLException
+     */
     public boolean insert(AlertComment comment) throws SQLException {
         String query = "INSERT INTO alert_comments (alert_id, user_id, body) VALUES (?,?,?)";
         try (Connection conn = DBConnection.getConnection();
@@ -20,6 +26,12 @@ public class AlertCommentDAO {
         }
     }
 
+    /**
+     *
+     * @param alertId
+     * @return
+     * @throws SQLException
+     */
     public List<AlertComment> getByAlertId(int alertId) throws SQLException {
         String query = "SELECT c.*, u.full_name AS user_name FROM alert_comments c " +
                 "JOIN users u ON c.user_id = u.user_id " +
@@ -37,6 +49,12 @@ public class AlertCommentDAO {
         return list;
     }
 
+    /**
+     *
+     * @param alertId
+     * @return
+     * @throws SQLException
+     */
     public int countByAlertId(int alertId) throws SQLException {
         String query = "SELECT COUNT(*) FROM alert_comments WHERE alert_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -49,16 +67,12 @@ public class AlertCommentDAO {
         return 0;
     }
 
-    public boolean delete(int commentId, int userId) throws SQLException {
-        String query = "DELETE FROM alert_comments WHERE comment_id = ? AND user_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement st = conn.prepareStatement(query)) {
-            st.setInt(1, commentId);
-            st.setInt(2, userId);
-            return st.executeUpdate() > 0;
-        }
-    }
-
+    /**
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     private AlertComment mapRow(ResultSet rs) throws SQLException {
         AlertComment c = new AlertComment();
         c.setCommentId(rs.getInt("comment_id"));
