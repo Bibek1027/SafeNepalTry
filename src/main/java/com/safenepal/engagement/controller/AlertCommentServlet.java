@@ -20,12 +20,26 @@ public class AlertCommentServlet extends HttpServlet {
 
     private static final int MAX_BODY_LEN = 2000;
 
+    /**
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         handleDelete(req, resp);
     }
 
+    /**
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -69,6 +83,13 @@ public class AlertCommentServlet extends HttpServlet {
         resp.sendRedirect(redirect + "#alert-" + alertId);
     }
 
+    /**
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     private void handleDelete(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         HttpSession session = req.getSession(false);
@@ -105,6 +126,12 @@ public class AlertCommentServlet extends HttpServlet {
         }
     }
 
+    /**
+     *
+     * @param req
+     * @param redirect
+     * @return
+     */
     private String sanitizeRedirect(HttpServletRequest req, String redirect) {
         String fallback = req.getContextPath() + "/";
         if (redirect == null || redirect.isBlank()) {

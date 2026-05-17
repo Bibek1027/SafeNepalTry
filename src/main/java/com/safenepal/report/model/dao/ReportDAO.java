@@ -7,6 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import com.safenepal.reportImage.model.dao.ReportImageDAO;
 
 // DAO class for all database operations related to reports table
 public class ReportDAO {
@@ -274,6 +275,10 @@ public class ReportDAO {
 
         }
         try { r.setReporterName(rs.getString("reporter_name")); }
+        catch (Exception ignored) {
+
+        }
+        try { r.setImages(new ReportImageDAO().getImagesByReportId(r.getId())); }
         catch (Exception ignored) {
 
         }

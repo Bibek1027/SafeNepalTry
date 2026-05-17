@@ -69,6 +69,23 @@ public class AlertCommentDAO {
 
     /**
      *
+     * @param commentId
+     * @param userId
+     * @return
+     * @throws SQLException
+     */ 
+    public boolean delete(int commentId, int userId) throws SQLException {
+        String query = "DELETE FROM alert_comments WHERE comment_id = ? AND user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(query)) {
+            st.setInt(1, commentId);
+            st.setInt(2, userId);
+            return st.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     *
      * @param rs
      * @return
      * @throws SQLException

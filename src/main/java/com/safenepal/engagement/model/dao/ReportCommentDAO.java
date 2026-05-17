@@ -8,7 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReportCommentDAO {
-
+    /**
+     *
+     * @param comment
+     * @return
+     * @throws SQLException
+     */
     public boolean insert(ReportComment comment) throws SQLException {
         String query = "INSERT INTO report_comments (report_id, user_id, body) VALUES (?,?,?)";
         try (Connection conn = DBConnection.getConnection();

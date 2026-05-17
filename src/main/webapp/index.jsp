@@ -5,6 +5,7 @@
 <%@ page import="com.safenepal.report.model.dao.ReportDAO" %>
 <%@ page import="com.safenepal.alert.model.dao.AlertDAO" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.safenepal.reportImage.model.ReportImage" %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <%
     boolean isLoggedIn = (session != null && session.getAttribute("userId") != null);
@@ -43,7 +44,7 @@
 
         /* ── Hero Section ── */
         .hero {
-            background: linear-gradient(135deg, #0d1440 0%, #1a237e 50%, #283593 100%);
+            background: #0d1440;
             padding: 80px 40px 60px;
             text-align: center;
             position: relative;
@@ -56,8 +57,9 @@
             right: -20%;
             width: 600px;
             height: 600px;
-            background: radial-gradient(circle, rgba(229,57,53,0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(229,57,53,0.15) 0%, transparent 70%);
             border-radius: 50%;
+            z-index: 1;
         }
         .hero::after {
             content: '';
@@ -66,10 +68,28 @@
             left: -10%;
             width: 400px;
             height: 400px;
-            background: radial-gradient(circle, rgba(66,165,245,0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(66,165,245,0.12) 0%, transparent 70%);
             border-radius: 50%;
+            z-index: 1;
         }
-        .hero-content { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+        .hero-bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.9;
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(13,20,64,0.2) 0%, rgba(26,35,126,0.1) 50%, rgba(40,53,147,0.2) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .hero-content { position: relative; z-index: 2; max-width: 720px; margin: 0 auto; }
         .hero-badge {
             display: inline-flex;
             align-items: center;
@@ -249,6 +269,28 @@
         .st-APPROVED { background: #e8f5e9; color: #2e7d32; }
         .st-REJECTED { background: #ffebee; color: #c62828; }
 
+        .report-media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 16px 0 12px;
+        }
+        .report-media-item {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: #f8fafc;
+        }
+        .report-media-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        video.report-media-item { cursor: default; }
+
         .report-card {
             padding: 18px 20px;
             border-radius: 14px;
@@ -377,6 +419,11 @@
         <a href="register" class="hero-btn hero-btn-primary" style="display:inline-block;">Register Now</a>
     </div>
 </div>
+<div class="modal-overlay" id="mediaModal" onclick="this.classList.remove('active')">
+    <div style="max-width: 90vw; max-height: 90vh; padding: 10px; position: relative;">
+        <img id="modalMediaImg" src="" style="max-width: 100%; max-height: 85vh; border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.4); display: none; margin: 0 auto;">
+    </div>
+</div>
 <div class="modal-overlay" id="loginLikeModal">
     <div class="modal">
         <div style="font-size: 48px; margin-bottom: 12px; color: #e53935;"><i class="fas fa-heart"></i></div>
@@ -393,6 +440,10 @@
 
     <!-- ═══ Hero ═══ -->
     <section class="hero">
+        <video class="hero-bg-video" autoplay muted loop playsinline>
+            <source src="${pageContext.request.contextPath}/assets/videos/background_video.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
         <div class="hero-content">
             <div class="hero-badge">Real-time disaster alerts for Nepal</div>
             <h1>
@@ -488,6 +539,21 @@
                         <% if (r.getReportedAt() != null) { %> · <%= reportDateFmt.format(r.getReportedAt()) %><% } %>
                     </div>
                     <div class="desc"><%= r.getDescription() %></div>
+                    <% if (r.getImages() != null && !r.getImages().isEmpty()) { %>
+                        <div class="report-media-grid">
+                            <% for (ReportImage img : r.getImages()) { 
+                                String imgPath = img.getImagePath();
+                                String lowerPath = imgPath.toLowerCase();
+                                boolean isVideo = lowerPath.endsWith(".mp4") || lowerPath.endsWith(".mov") || lowerPath.endsWith(".avi");
+                            %>
+                                <% if (isVideo) { %>
+                                    <video src="${pageContext.request.contextPath}/<%= imgPath %>" controls preload="metadata" class="report-media-item" playsinline></video>
+                                <% } else { %>
+                                    <img src="${pageContext.request.contextPath}/<%= imgPath %>" alt="Disaster media" class="report-media-item" loading="lazy" onclick="openMediaModal(this.src)">
+                                <% } %>
+                            <% } %>
+                        </div>
+                    <% } %>
                     <jsp:include page="/components/report-like.jsp">
                         <jsp:param name="reportId" value="<%= String.valueOf(r.getId()) %>"/>
                         <jsp:param name="redirectPath" value="/"/>
@@ -507,12 +573,31 @@
             <% if (myReports == null || myReports.isEmpty()) { %>
                 <div class="no-data"><span><i class="fas fa-folder-open" style="color: #94a3b8;"></i></span>You haven't submitted any reports yet.<br>Use the button above to report an emergency.</div>
             <% } else { for (Report r : myReports) { %>
-                <div class="report-row">
-                    <div>
-                        <span class="report-type"><%= r.getDisasterType() %></span>
-                        <span class="report-loc">Location: <%= r.getLocationName() %></span>
+                <div class="report-row" style="display: block;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span class="report-type"><%= r.getDisasterType() %></span>
+                            <span class="report-loc">Location: <%= r.getLocationName() %></span>
+                            <% if (r.getReportedAt() != null) { %> <span style="font-size:12px; color:#94a3b8; margin-left:8px;">· <%= reportDateFmt.format(r.getReportedAt()) %></span><% } %>
+                        </div>
+                        <span class="report-status st-<%= r.getStatus().toUpperCase() %>"><%= r.getStatus() %></span>
                     </div>
-                    <span class="report-status st-<%= r.getStatus().toUpperCase() %>"><%= r.getStatus() %></span>
+                    <div style="margin-top: 10px; font-size: 13px; color: #64748b;"><%= r.getDescription() %></div>
+                    <% if (r.getImages() != null && !r.getImages().isEmpty()) { %>
+                        <div class="report-media-grid">
+                            <% for (ReportImage img : r.getImages()) { 
+                                String imgPath = img.getImagePath();
+                                String lowerPath = imgPath.toLowerCase();
+                                boolean isVideo = lowerPath.endsWith(".mp4") || lowerPath.endsWith(".mov") || lowerPath.endsWith(".avi");
+                            %>
+                                <% if (isVideo) { %>
+                                    <video src="${pageContext.request.contextPath}/<%= imgPath %>" controls preload="metadata" class="report-media-item" playsinline></video>
+                                <% } else { %>
+                                    <img src="${pageContext.request.contextPath}/<%= imgPath %>" alt="Disaster media" class="report-media-item" loading="lazy" onclick="openMediaModal(this.src)">
+                                <% } %>
+                            <% } %>
+                        </div>
+                    <% } %>
                 </div>
             <% } } %>
         </div>
@@ -561,6 +646,11 @@
             if (reportAnchor) reportAnchor.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     })();
+    function openMediaModal(url) {
+        document.getElementById('modalMediaImg').src = url;
+        document.getElementById('modalMediaImg').style.display = 'block';
+        document.getElementById('mediaModal').classList.add('active');
+    }
 </script>
 </body>
 </html>
