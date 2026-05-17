@@ -36,7 +36,6 @@
             padding: 60px 48px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             color: #fff;
             position: relative;
             overflow: hidden;
@@ -52,6 +51,12 @@
             border-radius: 50%;
         }
         .auth-left .icon-big { font-size: 64px; margin-bottom: 24px; }
+        .auth-left .logo-img {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            margin-bottom: 24px;
+        }
         .auth-left h2 { font-size: 28px; font-weight: 900; margin-bottom: 14px; line-height: 1.2; }
         .auth-left p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7; max-width: 280px; }
         .auth-left .feature-list { margin-top: 32px; list-style: none; }
@@ -177,7 +182,9 @@
     <div class="auth-page">
         <div class="auth-container">
             <div class="auth-left">
-                <div class="icon-big">S</div>
+                <div class="icon-big">
+                    <img src="${pageContext.request.contextPath}/assets/images/logo3.png" alt="SafeNepal Logo" style="height: 64px; width: auto; object-fit: contain;">
+                </div>
                 <h2>Welcome Back to SafeNepal</h2>
                 <p>Sign in to your account to manage reports, view alerts, and help keep your community safe.</p>
                 <ul class="feature-list">

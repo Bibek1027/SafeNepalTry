@@ -227,24 +227,24 @@
                               placeholder="Describe the situation — what's happening, how severe, any immediate dangers or needs..." required></textarea>
                 </div>
 
-                <!-- Image Upload -->
+                <!-- Image/Video Upload -->
                 <div class="form-group">
-                    <label>Photos <span style="color:#94a3b8; font-weight:500;">(Optional — max 3 images)</span></label>
+                    <label>Photos & Videos <span style="color:#94a3b8; font-weight:500;">(Optional — max 3 files)</span></label>
                     <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageInput').click()"
                          ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
                         <div class="upload-icon">I</div>
-                        <div class="upload-label">Drag & drop images here</div>
+                        <div class="upload-label">Drag & drop images or videos here</div>
                         <div class="upload-sub">or click to browse</div>
-                        <span class="upload-btn">Choose Images</span>
+                        <span class="upload-btn">Choose Files</span>
                         <%-- 'multiple' allows picking several files at once --%>
-                        <input type="file" id="imageInput" name="images" accept=".jpg,.jpeg,.png" multiple
+                        <input type="file" id="imageInput" name="images" accept=".jpg,.jpeg,.png,.mp4,.mov,.avi" multiple
                                onchange="handleFileSelect(this.files)">
                     </div>
                     <div class="preview-strip" id="previewStrip"></div>
                     <p class="file-hint">
-                        Accepted: <span class="ok">JPG, JPEG, PNG</span> &nbsp;|&nbsp;
-                        Max size: <span class="ok">5 MB</span> per image &nbsp;|&nbsp;
-                        Max: <span class="ok">3 images</span>
+                        Accepted: <span class="ok">JPG, JPEG, PNG, MP4, MOV, AVI</span> &nbsp;|&nbsp;
+                        Max size: <span class="ok">50 MB</span> per file &nbsp;|&nbsp;
+                        Max: <span class="ok">3 files</span>
                     </p>
                     <p class="file-hint warn" id="fileError" style="display:none;"></p>
                 </div>
@@ -262,8 +262,8 @@
     // Stores the DataTransfer object to allow removing individual files
     let selectedFiles = [];
     const MAX_FILES   = 3;
-    const MAX_SIZE_MB = 5;
-    const ALLOWED_EXT = ['jpg','jpeg','png'];
+    const MAX_SIZE_MB = 50;
+    const ALLOWED_EXT = ['jpg','jpeg','png','mp4','mov','avi'];
 
     function handleFileSelect(files) {
         const err = document.getElementById('fileError');

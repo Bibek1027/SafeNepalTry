@@ -49,6 +49,16 @@ public class ReportCommentDAO {
         return 0;
     }
 
+    public boolean delete(int commentId, int userId) throws SQLException {
+        String query = "DELETE FROM report_comments WHERE comment_id = ? AND user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(query)) {
+            st.setInt(1, commentId);
+            st.setInt(2, userId);
+            return st.executeUpdate() > 0;
+        }
+    }
+
     private ReportComment mapRow(ResultSet rs) throws SQLException {
         ReportComment c = new ReportComment();
         c.setCommentId(rs.getInt("comment_id"));

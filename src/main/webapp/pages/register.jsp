@@ -173,7 +173,7 @@
     <div class="auth-page">
         <div class="auth-container">
             <div class="auth-left">
-                <div class="icon-big">J</div>
+                <div class="icon-big"><i class="fas fa-handshake"></i></div>
                 <h2>Join the SafeNepal Community</h2>
                 <p>Help us build a more resilient Nepal by reporting disasters and sharing emergency information.</p>
                 <ol class="steps">

@@ -42,6 +42,11 @@
     letter-spacing: 1.2px;
   }
   .sn-nav .brand span { font-size: 24px; }
+  .sn-nav .brand-logo {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+  }
   .sn-nav-links {
     display: flex;
     align-items: center;
@@ -251,6 +256,7 @@
 
 <nav class="sn-nav">
   <a href="${pageContext.request.contextPath}/index.jsp" class="brand">
+    <img src="${pageContext.request.contextPath}/assets/images/logo3.png" alt="SafeNepal Logo" class="brand-logo">
     SAFENEPAL
   </a>
   <div class="sn-nav-links">

@@ -27,14 +27,14 @@ import java.util.*;
 @WebServlet("/user/report")
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024,      // 1 MB — buffer before writing to disk
-    maxFileSize       = 5 * 1024 * 1024,  // 5 MB max per file
-    maxRequestSize    = 20 * 1024 * 1024  // 20 MB max total request
+    maxFileSize       = 50 * 1024 * 1024, // 50 MB max per file (for videos)
+    maxRequestSize    = 150 * 1024 * 1024 // 150 MB max total request
 )
 public class ReportServlet extends HttpServlet {
 
     // Only these extensions are allowed for uploads
     private static final Set<String> ALLOWED_TYPES = new HashSet<>(
-        Arrays.asList("image/jpeg", "image/jpg", "image/png")
+        Arrays.asList("image/jpeg", "image/jpg", "image/png", "video/mp4", "video/quicktime", "video/x-msvideo")
     );
 
     @Override
@@ -110,14 +110,14 @@ public class ReportServlet extends HttpServlet {
                 // Validate file type
                 String contentType = part.getContentType();
                 if (!ALLOWED_TYPES.contains(contentType)) {
-                    req.setAttribute("error", "Only JPG and PNG images are allowed.");
+                    req.setAttribute("error", "Only JPG, PNG images and MP4, MOV, AVI videos are allowed.");
                     req.getRequestDispatcher("/pages/user/reportForm.jsp").forward(req, resp);
                     return;
                 }
 
-                // Validate file size (5 MB)
-                if (part.getSize() > 5 * 1024 * 1024) {
-                    req.setAttribute("error", "Each image must be under 5 MB.");
+                // Validate file size (50 MB)
+                if (part.getSize() > 50 * 1024 * 1024) {
+                    req.setAttribute("error", "Each file must be under 50 MB.");
                     req.getRequestDispatcher("/pages/user/reportForm.jsp").forward(req, resp);
                     return;
                 }

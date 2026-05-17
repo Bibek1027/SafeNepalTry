@@ -16,6 +16,7 @@
     }
 
     boolean loggedIn = (session != null && session.getAttribute("userId") != null);
+    int currentUserId = loggedIn ? (int) session.getAttribute("userId") : 0;
     List<AlertComment> comments = java.util.Collections.emptyList();
     int commentCount = 0;
     SimpleDateFormat df = new SimpleDateFormat("MMM d, yyyy · HH:mm");
@@ -46,6 +47,11 @@
                     <strong><%= author %></strong>
                     <% if (c.getCreatedAt() != null) { %>
                         <span class="alert-comment-time"><%= df.format(c.getCreatedAt()) %></span>
+                    <% } %>
+                    <% if (loggedIn && c.getUserId() == currentUserId) { %>
+                        <a href="${pageContext.request.contextPath}/user/alert/comment?delete=<%= c.getCommentId() %>&alertId=<%= alertId %>&redirect=<%= redirectPath %>" class="alert-comment-delete" onclick="return confirm('Delete this comment?');">
+                            <i class="fas fa-trash"></i>
+                        </a>
                     <% } %>
                 </div>
                 <p class="alert-comment-text"><%= text %></p>

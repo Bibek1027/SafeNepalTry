@@ -131,20 +131,30 @@
         }
         .stat-card:hover { transform: translateY(-4px); }
         .stat-card .icon-box {
-            width: 44px; height: 44px;
-            border-radius: 12px;
+            width: 64px; height: 64px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 24px;
             margin-bottom: 16px;
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card .icon-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+        }
+        .stat-card .icon-box i {
+            font-size: 30px;
         }
         .stat-card .value { font-size: 32px; font-weight: 900; color: #0d1440; }
         .stat-card .label { font-size: 13px; font-weight: 600; color: #94a3b8; margin-top: 4px; }
-        .bg-orange { background: #fff3e0; }
-        .bg-green  { background: #e8f5e9; }
-        .bg-blue   { background: #e3f2fd; }
-        .bg-purple { background: #f3e5f5; }
+        .bg-orange { background: linear-gradient(135deg, #ffab40 0%, #ff6d00 100%); }
+        .bg-green  { background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); }
+        .bg-blue   { background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%); }
+        .bg-purple { background: linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%); }
 
         /* ── Section Card ── */
         .section-card {
@@ -247,22 +257,22 @@
 
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="icon-box bg-orange">P</div>
+            <div class="icon-box bg-orange"><i class="fas fa-hourglass-half"></i></div>
             <div class="value"><%= pendingReports %></div>
             <div class="label">Pending Reports</div>
         </div>
         <div class="stat-card">
-            <div class="icon-box bg-green">V</div>
+            <div class="icon-box bg-green"><i class="fas fa-check-circle"></i></div>
             <div class="value"><%= approvedReports %></div>
             <div class="label">Approved Reports</div>
         </div>
         <div class="stat-card">
-            <div class="icon-box bg-blue">A</div>
+            <div class="icon-box bg-blue"><i class="fas fa-exclamation-triangle"></i></div>
             <div class="value"><%= totalAlerts %></div>
             <div class="label">Active Alerts</div>
         </div>
         <div class="stat-card">
-            <div class="icon-box bg-purple">U</div>
+            <div class="icon-box bg-purple"><i class="fas fa-users"></i></div>
             <div class="value"><%= totalUsers %></div>
             <div class="label">Registered Users</div>
         </div>

@@ -21,6 +21,12 @@ public class AlertCommentServlet extends HttpServlet {
     private static final int MAX_BODY_LEN = 2000;
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        handleDelete(req, resp);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
@@ -61,6 +67,42 @@ public class AlertCommentServlet extends HttpServlet {
         }
 
         resp.sendRedirect(redirect + "#alert-" + alertId);
+    }
+
+    private void handleDelete(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
+        String commentIdStr = req.getParameter("delete");
+        String alertIdStr = req.getParameter("alertId");
+        String redirect = sanitizeRedirect(req, req.getParameter("redirect"));
+
+        if (commentIdStr == null || alertIdStr == null) {
+            resp.sendRedirect(redirect);
+            return;
+        }
+
+        try {
+            int commentId = Integer.parseInt(commentIdStr);
+            int alertId = Integer.parseInt(alertIdStr);
+            int userId = (int) session.getAttribute("userId");
+
+            AlertCommentDAO dao = new AlertCommentDAO();
+            boolean deleted = dao.delete(commentId, userId);
+
+            if (deleted) {
+                resp.sendRedirect(redirect + "#alert-" + alertId);
+            } else {
+                resp.sendRedirect(redirect + "?commentError=deleteFailed#alert-" + alertId);
+            }
+        } catch (Exception e) {
+            System.err.println("[AlertCommentServlet] Delete error: " + e.getMessage());
+            resp.sendRedirect(redirect);
+        }
     }
 
     private String sanitizeRedirect(HttpServletRequest req, String redirect) {
