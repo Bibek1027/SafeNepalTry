@@ -9,6 +9,11 @@ import java.util.List;
 
 public class LocationDAO {
 
+    /**
+     * description: fetch all locations details
+     * @return
+     * @throws SQLException
+     */
     public List<Location> getAllLocations() throws SQLException {
         List<Location> list = new ArrayList<>();
         String query = "SELECT * FROM locations ORDER BY location_name ASC";

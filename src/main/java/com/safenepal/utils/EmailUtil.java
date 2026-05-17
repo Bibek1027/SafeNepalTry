@@ -13,15 +13,11 @@ import java.util.Properties;
  */
 public class EmailUtil {
 
-    // ─── Gmail SMTP Configuration ────────────────────────────────────
-    // IMPORTANT: Update SENDER_EMAIL to the Gmail address that owns the App
-    // Password below.
     private static final String SENDER_EMAIL = "beebektamang90@gmail.com";
     private static final String APP_PASSWORD = "sflc veyh mrvv tjos";
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final int SMTP_PORT = 587;
 
-    // Reusable mail session (thread-safe)
     private static final Session MAIL_SESSION;
 
     static {
@@ -41,12 +37,12 @@ public class EmailUtil {
     }
 
     /**
-     * Sends an HTML email asynchronously. Failures are logged to stderr
+     * description: Sends an HTML email asynchronously. Failures are logged to stderr
      * but never propagated — email delivery should not break main flows.
      *
-     * @param toEmail  recipient email address
-     * @param subject  email subject line
-     * @param htmlBody HTML content for the email body
+     * @param toEmail
+     * @param subject
+     * @param htmlBody
      */
     public static void sendEmail(String toEmail, String subject, String htmlBody) {
         new Thread(() -> {
@@ -69,7 +65,11 @@ public class EmailUtil {
     // ─── Professional HTML Email Templates ───────────────────────────
 
     /**
-     * Wraps content in a branded SafeNepal HTML email layout.
+     * description: Wraps content in a branded SafeNepal HTML email layout.
+     *
+     * @param title
+     * @param bodyContent
+     * @return
      */
     private static String wrapInTemplate(String title, String bodyContent) {
         return "<!DOCTYPE html>" +
@@ -108,7 +108,12 @@ public class EmailUtil {
 
     // ─── Pre-built Email Bodies ──────────────────────────────────────
 
-    /** Email body for password change confirmation */
+    /**
+     * description: Email body for password change confirmation
+     *
+     * @param userName
+     * @return
+     */
     public static String passwordChangedBody(String userName) {
         String content = "<p>Hello <strong>" + userName + "</strong>,</p>" +
                 "<p>Your SafeNepal account password has been changed successfully.</p>" +
@@ -121,7 +126,12 @@ public class EmailUtil {
         return wrapInTemplate("Password Changed", content);
     }
 
-    /** Email body for profile update confirmation */
+    /**
+     * description: Email body for profile update confirmation
+     *
+     * @param userName
+     * @return
+     */
     public static String profileUpdatedBody(String userName) {
         String content = "<p>Hello <strong>" + userName + "</strong>,</p>" +
                 "<p>Your profile information has been updated successfully on SafeNepal.</p>" +
@@ -132,7 +142,13 @@ public class EmailUtil {
         return wrapInTemplate("Profile Updated", content);
     }
 
-    /** Email body for new report submission confirmation */
+    /**
+     * description: Email body for new report submission confirmation
+     *
+     * @param userName
+     * @param disasterType
+     * @return
+     */
     public static String reportSubmittedBody(String userName, String disasterType) {
         String content = "<p>Hello <strong>" + userName + "</strong>,</p>" +
                 "<p>Your <strong>" + disasterType + "</strong> disaster report has been submitted successfully.</p>" +
@@ -145,7 +161,13 @@ public class EmailUtil {
         return wrapInTemplate("Report Submitted", content);
     }
 
-    /** Email body for report approval */
+    /**
+     * description: Email body for report approval
+     *
+     * @param userName
+     * @param disasterType
+     * @return
+     */
     public static String reportApprovedBody(String userName, String disasterType) {
         String content = "<p>Hello <strong>" + userName + "</strong>,</p>" +
                 "<p>Your <strong>" + disasterType
@@ -159,7 +181,13 @@ public class EmailUtil {
         return wrapInTemplate("Report Approved", content);
     }
 
-    /** Email body for report rejection */
+    /**
+     * description:  Email body for report rejection
+     *
+     * @param userName
+     * @param disasterType
+     * @return
+     */
     public static String reportRejectedBody(String userName, String disasterType) {
         String content = "<p>Hello <strong>" + userName + "</strong>,</p>" +
                 "<p>Your <strong>" + disasterType
@@ -174,7 +202,14 @@ public class EmailUtil {
         return wrapInTemplate("Report Not Approved", content);
     }
 
-    /** Email body for new emergency alert */
+    /**
+     * description: Email body for new emergency alert
+     *
+     * @param userName
+     * @param alertMessage
+     * @param severity
+     * @return
+     */
     public static String newAlertBody(String userName, String alertMessage, String severity) {
         String severityColor;
         switch (severity != null ? severity.toLowerCase() : "") {

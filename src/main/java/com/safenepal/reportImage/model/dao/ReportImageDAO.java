@@ -10,7 +10,13 @@ import java.util.List;
 // DAO class for all database operations related to report_images table
 public class ReportImageDAO {
 
-    // Insert a new image record linked to a report
+    /**
+     * description: Insert a new image record linked to a report
+     *
+     * @param img
+     * @return
+     * @throws SQLException
+     */
     public boolean insertImage(ReportImage img) throws SQLException {
         String query = "INSERT INTO report_images (report_id, image_path, description) VALUES (?,?,?)";
         try (Connection conn = DBConnection.getConnection();
@@ -24,7 +30,13 @@ public class ReportImageDAO {
         }
     }
 
-    // Fetch all images for a specific report
+    /**
+     * description: Fetch all images for a specific report
+     *
+     * @param reportId
+     * @return
+     * @throws SQLException
+     */
     public List<ReportImage> getImagesByReportId(int reportId) throws SQLException {
         String query = "SELECT * FROM report_images WHERE report_id = ? ORDER BY uploaded_at ASC";
         List<ReportImage> list = new ArrayList<>();
@@ -42,7 +54,13 @@ public class ReportImageDAO {
         return list;
     }
 
-    // Delete all images for a report (called when report is deleted)
+    /**
+     * description: Delete all images for a report (called when report is deleted)
+     *
+     * @param reportId
+     * @return
+     * @throws SQLException
+     */
     public boolean deleteByReportId(int reportId) throws SQLException {
         String query = "DELETE FROM report_images WHERE report_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -53,7 +71,13 @@ public class ReportImageDAO {
         }
     }
 
-    // Helper method: map a ResultSet row to a ReportImage object
+    /**
+     * description: Helper method: map a ResultSet row to a ReportImage object
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     private ReportImage mapRow(ResultSet rs) throws SQLException {
         ReportImage img = new ReportImage();
         img.setImageId(rs.getInt("image_id"));
